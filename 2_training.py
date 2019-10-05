@@ -5,7 +5,10 @@ import keras
 
 import config
 import utils
+import models
 
+
+import argparse
 
 class Data(object):
     """Class that deals with all the data mess
@@ -177,3 +180,45 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
 
     run_evaluation(exper_dir, save_key, history, dat, model)
     print("Done! Results saved to {}".format(save_path))
+
+
+
+def main(args):
+
+    batch_size = 16
+    active_str = 200
+    muxrate = 30
+
+    save_key = args.save_key
+
+    if args.model_name == 'model5':
+        model = models.build_model5()
+    elif args.model_name == 'model6':
+        model = models.build_model6()
+    elif args.model_name == 'model7':
+        model = models.build_model7()
+    else:
+        print("Specified model does not exist. Please choose an valid model: model5, model6 or model7.")
+        return
+
+
+    experiment(save_key, model, batch_size, active_str, muxrate)
+
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Train specified model with training set.")
+
+    parser.add_argument("--model",
+                        dest='model_name',
+                        type=str,
+                        help="Name of the model you want to train.")
+
+    parser.add_argument("--save_key",
+                        dest='save_key',
+                        type=str,
+                        help="String to save model-related data.")
+
+
+    main(parser.parse_args())
