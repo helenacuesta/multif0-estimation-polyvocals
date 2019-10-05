@@ -90,16 +90,10 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
 
     ## DATA MESS SETUP
 
-
-    # create data object with
-    # data_splits_path, data_path, input_patch_size, batch_size, active_str, muxrate
-
     dat = Data(
         data_splits_path, data_path, input_patch_size,
         batch_size, active_str, muxrate
     )
-
-
 
     # instantiate train and validation generators
 
@@ -122,7 +116,7 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
             keras.callbacks.ModelCheckpoint(
                 model_save_path, save_best_only=True, verbose=1),
             keras.callbacks.ReduceLROnPlateau(patience=5, verbose=1),
-            keras.callbacks.EarlyStopping(patience=25, verbose=0)
+            keras.callbacks.EarlyStopping(patience=25, verbose=1)
         ]
     )
 
@@ -135,22 +129,22 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
-     ) = eval_utils.get_paths(exper_dir, save_key)
+     ) = utils.get_paths(exper_dir, save_key)
 
     ## Results plots
     print("plotting results...")
-    eval_utils.plot_metrics_epochs(history, plot_save_path)
+    utils.plot_metrics_epochs(history, plot_save_path)
 
     ## Evaluate
     print("getting model metrics...")
-    eval_utils.get_model_metrics(dat, model, model_scores_path)
+    utils.get_model_metrics(dat, model, model_scores_path)
 
     print("getting best threshold...")
-    thresh = eval_utils.get_best_thresh(dat, model)
+    thresh = utils.get_best_thresh(dat, model)
 
 
     print("scoring multif0 metrics on test sets...")
-    eval_utils.score_on_test_set(model, save_path, thresh)
+    utils.score_on_test_set(model, save_path, thresh)
 
 
 def experiment(save_key, model, batch_size, active_str, muxrate):
@@ -158,11 +152,11 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
     This should be common code for all experiments
     """
 
-    exper_dir = train_utils.experiment_output_path()
+    exper_dir = utils.experiment_output_path()
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
-     ) = eval_utils.get_paths(exper_dir, save_key)
+     ) = utils.get_paths(exper_dir, save_key)
 
 
     model_save_path_rt = './models'
@@ -174,7 +168,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
 
     # create data splits file if it doesnt exist
     if not os.path.exists(
-        os.path.join(exper_dir, 'mtracks_metadata_augm.json')):
+        os.path.join(exper_dir, 'data_splits.json')):
         create_data_splits(path_to_metadata_file='./mtracks_metadata_augm.json', exper_dir=exper_dir)
 
 
