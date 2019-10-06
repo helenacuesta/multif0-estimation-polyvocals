@@ -172,7 +172,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
     # create data splits file if it doesnt exist
     if not os.path.exists(
         os.path.join(exper_dir, 'data_splits.json')):
-        create_data_splits(path_to_metadata_file='./mtracks_metadata_augm.json', exper_dir=exper_dir)
+        create_data_splits(path_to_metadata_file='./mtracks_info.json', exper_dir=exper_dir)
 
 
     model, history, dat = train(model, model_save_path, exper_dir,
