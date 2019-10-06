@@ -98,6 +98,8 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
         batch_size, active_str, muxrate
     )
 
+    print(dat.load_data_splits()[0])
+
     # instantiate train and validation generators
 
     train_generator = dat.get_train_generator()
