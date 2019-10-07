@@ -698,6 +698,7 @@ def score_on_test_set(model, save_path, dat, thresh=0.5):
         print(npy_file)
         # get input npy file and ground truth label pair
         fname_base_gt = os.path.basename(npy_file).replace('_input_dph.npy', '.csv')
+        fname_base_gt = 'rev_' + fname_base_gt
         print(fname_base_gt)
         fname_base = fname_base_gt[:-4]
         print(fname_base)
