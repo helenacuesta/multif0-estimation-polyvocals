@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=exp6
 #SBATCH --nodes=1
-#SBATCH --time=72:00:00
+#SBATCH --time=144:00:00
 #SBATCH --mem=100GB
 #SBATCH --gres=gpu:1
 #SBATCH --output=exp6.out
