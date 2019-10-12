@@ -210,7 +210,7 @@ for md in models_to_use:
         print("Wrong model")
         continue
 
-    model_path = os.path.join('../models', save_key + '.pkl')
+    model_path = os.path.join('../multif0-ds-singing/models', save_key + '.pkl')
 
     model.load_weights(model_path)
     print("{} built".format(md))
