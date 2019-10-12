@@ -224,7 +224,13 @@ for md in models_to_use:
 
     thresholds = [0.2, 0.3, 0.4]
 
-    fnlist = np.loadtxt('./songs_to_evaluate.txt')
+    #fnlist = np.loadtxt('./songs_to_evaluate.txt')
+    fnlist = ['2_DG_take1_3_3_2_2.npy',
+              '3_CSD_ER_3_3_2_4.npy', '0_CSD_ND_2_2_1_4.npy',
+              '1_CSD_ER_3_2_2_1.npy', '1_WU_take1_1_2_1_1.npy',
+              '2_CSD_ND_1_1_1_1.npy', '2_DG_take1_1_3_1_1.npy',
+              '4_WU_take1_1_3_3_1.npy', '4_CSD_ND_2_2_2_4.npy',
+              '3_DG_take2_1_2_3_1.npy', '3_CSD_LI_4_4_4_1.npy']
 
     for thrsh in thresholds:
         th_folder = './results/{}/{}'.format(md, thrsh)
