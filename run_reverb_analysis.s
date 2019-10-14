@@ -3,7 +3,7 @@
 #SBATCH --job-name=reverb
 #SBATCH --nodes=1
 #SBATCH --time=10:00:00
-#SBATCH --mem=50
+#SBATCH --mem=100GB
 #SBATCH --gres=gpu:1
 #SBATCH --output=reverb.out
 #SBATCH --error=reverb.err

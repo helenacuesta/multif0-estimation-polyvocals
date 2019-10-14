@@ -81,17 +81,11 @@ def score_on_list_of_files(model, list_of_files, npy_folder, gt_folder, save_pat
 
     for npy_file in sorted(test_npy_files):
         if not npy_file.endswith('npy'): continue
-
+        gt_fname = os.path.basename(npy_file).replace('.npy', '_multif0.csv')
         npy_file = 'rev_' + npy_file[:-4] + '_multif0_input_dph.npy'
-
         print("Scoring for {}".format(npy_file))
-
         npy_file = os.path.join(npy_folder, npy_file)
-
-        # get input npy file and ground truth label pair
-        gt_fname = os.path.basename(npy_file).replace('_multif0_input_dph.npy', '.csv')
-        gt_fname = gt_fname.replace('rev_', '')
-
+        
         fname_base = gt_fname[:-4]
 
         label_file = os.path.join(gt_folder, gt_fname)
