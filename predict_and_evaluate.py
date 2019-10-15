@@ -228,7 +228,8 @@ for md in models_to_use:
 
     for thrsh in thresholds:
         th_folder = './results/{}/{}'.format(md, thrsh)
-        os.mkdir(th_folder)
+        if not os.path.exists(th_folder):
+            os.mkdir(th_folder)
         print("Using threshold = {}".format(thrsh))
         score_on_list_of_files(model, fnlist, rev_features_folder, gt_folder, th_folder, thresh=thrsh)
 
