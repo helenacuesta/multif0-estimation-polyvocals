@@ -14,4 +14,4 @@ module load cuda/10.1.105
 module load cudnn/7.0v4.0
 
 
-python predict_and_evaluate.py
+python predict_and_eval_reverb.py

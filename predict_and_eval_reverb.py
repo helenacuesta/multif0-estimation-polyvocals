@@ -226,7 +226,7 @@ for md in models_to_use:
               '3_DG_take2_1_2_3_1.npy', '3_CSD_LI_4_4_4_1.npy']
 
     for thrsh in thresholds:
-        th_folder = './results/{}/{}'.format(md, thrsh)
+        th_folder = '/scratch/hc2945/multif0/experiment_output/reverb_results/{}/{}'.format(md, thrsh)
         if not os.path.exists(th_folder):
             os.mkdir(th_folder)
         print("Using threshold = {}".format(thrsh))
