@@ -130,15 +130,25 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
     return model, history, dat
 
 
-def run_evaluation(exper_dir, save_key, history, dat, model):
+def run_evaluation(exper_dir, save_key, model, batch_size, active_str, muxrate):
+
+    data_path = utils.data_path_multif0()
+
+    input_patch_size = (360, 50)
+    data_splits_path = os.path.join(exper_dir, 'data_splits.json')
+
+    ## DATA MESS SETUP
+
+    dat = Data(
+        data_splits_path, data_path, input_patch_size,
+        batch_size, active_str, muxrate
+    )
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
      ) = utils.get_paths(exper_dir, save_key)
 
-    ## Results plots
-    print("plotting results...")
-    utils.plot_metrics_epochs(history, plot_save_path)
+
 
     ## Evaluate
     print("getting model metrics...")
@@ -176,11 +186,14 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
         os.path.join(exper_dir, 'data_splits.json')):
         create_data_splits(path_to_metadata_file='./mtracks_info.json', exper_dir=exper_dir)
 
-
+    '''
     model, history, dat = train(model, model_save_path, exper_dir,
                                 batch_size, active_str, muxrate)
+    '''
 
-    run_evaluation(exper_dir, save_key, history, dat, model)
+    model = model.load_weights(model_save_path)
+
+    run_evaluation(exper_dir, save_key, model, batch_size, active_str, muxrate)
     print("Done! Results saved to {}".format(save_path))
 
 
