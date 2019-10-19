@@ -137,8 +137,8 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
      ) = utils.get_paths(exper_dir, save_key)
 
     ## Results plots
-    print("plotting results...")
-    utils.plot_metrics_epochs(history, plot_save_path)
+#    print("plotting results...")
+#    utils.plot_metrics_epochs(history, plot_save_path)
 
     ## Evaluate
     print("getting model metrics...")
@@ -177,8 +177,9 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
         create_data_splits(path_to_metadata_file='./mtracks_info.json', exper_dir=exper_dir)
 
 
-    model, history, dat = train(model, model_save_path, exper_dir,
-                                batch_size, active_str, muxrate)
+#    model, history, dat = train(model, model_save_path, exper_dir,
+#                                batch_size, active_str, muxrate)
+    history=0
 
     run_evaluation(exper_dir, save_key, history, dat, model)
     print("Done! Results saved to {}".format(save_path))
