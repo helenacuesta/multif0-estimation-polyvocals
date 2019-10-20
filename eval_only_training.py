@@ -196,7 +196,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
         optimizer='adam'
     )
 
-    model = model.load_weights(model_save_path)
+    model.load_weights(model_save_path)
 
 
     run_evaluation(exper_dir, save_key, model, batch_size, active_str, muxrate)
