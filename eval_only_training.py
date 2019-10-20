@@ -191,12 +191,13 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
                                 batch_size, active_str, muxrate)
     '''
 
-    model = model.load_weights(model_save_path)
-
     model.compile(
         loss=utils.bkld, metrics=['mse', utils.soft_binary_accuracy],
         optimizer='adam'
     )
+
+    model = model.load_weights(model_save_path)
+
 
     run_evaluation(exper_dir, save_key, model, batch_size, active_str, muxrate)
     print("Done! Results saved to {}".format(save_path))
