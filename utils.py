@@ -645,6 +645,9 @@ def get_best_thresh(dat, model):
 
         print(label_file)
 
+        if 'rev' in label_file:
+            label_file = label_file[4:]
+
         # generate prediction on numpy file
         predicted_output, input_hcqt, input_dph = \
             get_single_test_prediction(model=model, npy_file=npy_file)
