@@ -625,7 +625,7 @@ def pitch_activations_to_mf0(pitch_activation_mat, thresh):
 def test_path():
     """top level path for test data
     """
-    return '/scratch/hc2945/multif0/AudioMixtures/test_data'
+    return '/scratch/hc2945/multif0/VocalEnsembles/test_data'
 
 def get_best_thresh(dat, model):
     """Use validation set to get the best threshold value
