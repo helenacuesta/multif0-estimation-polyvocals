@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
+import ast
 
 import pumpp
 import jams
@@ -622,6 +623,29 @@ def pitch_activations_to_mf0(pitch_activation_mat, thresh):
     est_freqs = [np.array(lst) for lst in est_freqs]
     return times, est_freqs
 
+def load_broken_mf0(annotpath):
+    '''Equivalent function to load_ragged_time_series in mir_eval for bad-formatted csv files
+        as the ones I have now.
+    '''
+
+    times = []
+    freqs = []
+    with open(annotpath, 'r') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            times.append(float(line[0]))
+            fqs = ast.literal_eval(line[1])
+            freqs.append(np.array(fqs))
+
+    times = np.array(times)
+
+    # get rid of zeros for input to mir_eval
+    for i, (tms, fqs) in enumerate(zip(times, freqs)):
+        if any(fqs == 0):
+            freqs[i] = np.array([f for f in fqs if f > 0])
+
+    return times, freqs
+
 def test_path():
     """top level path for test data
     """
@@ -654,9 +678,9 @@ def get_best_thresh(dat, model):
             get_single_test_prediction(model=model, npy_file=npy_file)
 
         # load ground truth labels
-        ref_times, ref_freqs = \
-            mir_eval.io.load_ragged_time_series(label_file)
-        #ref_times, ref_freqs = load_broken_mf0(label_file)
+        #ref_times, ref_freqs = \
+        #    mir_eval.io.load_ragged_time_series(label_file)
+        ref_times, ref_freqs = load_broken_mf0(label_file)
 
         for thresh in thresh_vals:
             # get multif0 output from prediction
@@ -740,7 +764,8 @@ def score_on_test_set(model, save_path, dat, thresh=0.5):
         )
 
         # load ground truth labels
-        ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        #ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        ref_times, ref_freqs = load_broken_mf0(label_file)
 
         # get multif0 metrics and append
         scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs)
