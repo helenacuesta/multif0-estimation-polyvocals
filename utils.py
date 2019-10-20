@@ -640,13 +640,14 @@ def get_best_thresh(dat, model):
     for npy_file, _ in validation_files:
 
         fname_base = os.path.basename(npy_file).replace('_input_dph.npy', '.csv')
+
+        if 'rev_' in fname_base:
+            fname_base = fname_base[4:]
+
         label_file = os.path.join(
                 test_set_path, fname_base)
 
         print(label_file)
-
-        if 'rev' in label_file:
-            label_file = label_file[4:]
 
         # generate prediction on numpy file
         predicted_output, input_hcqt, input_dph = \
