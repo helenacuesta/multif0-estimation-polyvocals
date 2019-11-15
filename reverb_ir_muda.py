@@ -41,66 +41,41 @@ def deform_times(annotation, ir_groupdelay):
             confidence=obs.confidence,
         )
 
+def f0_annotation_shift(f0_vec, gd):
+    '''
+
+    :param f0_vec: vector with the original f0 annotations, [timestamp, f0 value]
+    :param gd: group delay estimated by muda
+    :return: vector with the modified f0 annotations, shifted in time according to the group delay
+    '''
+    # see if it's this straightforward...I don't think so
+    ts = f0_vec[:, 0]
+    ts_sh = ts + gd
+    f0_vec[:, 0] = ts_sh
+
+    return f0_vec
+
+
 def read_annotations(path_to_jams):
     annotation = jams.load(path_to_jams)
     return annotation
 
+def read_impulse(ir_path, fs):
 
-def median_group_delay(y, sr, n_fft=2048, rolloff_value=-24):
-    """Compute the average group delay for a signal
+    ir_sig, ir_sr = librosa.core.load(
+        ir_path, sr=fs)
 
-    Parameters
-    ----------
-    y : np.ndarray
-        the signal
+    return ir_sig, ir_sr
 
-    sr : int > 0
-        the sampling rate of `y`
-
-    n_fft : int > 0
-        the FFT window size
-
-    rolloff_value : int > 0
-        If provided, only estimate the groupd delay of the passband that
-        above the threshold, which is the rolloff_value below the peak
-        on frequency response.
-
-    Returns
-    -------
-    mean_delay : float
-        The mediant group delay of `y` (in seconds)
-
-    """
-    if rolloff_value > 0:
-        # rolloff_value must be strictly negative
-        rolloff_value = -rolloff_value
-
-    # frequency response
-    _, h_ir = freqz(y, a=1, worN=n_fft, whole=False, plot=None)
-
-    # convert to dB(clip function avoids the zero value in log computation)
-    power_ir = 20 * np.log10(np.clip(np.abs(h_ir), 1e-8, 1e100))
-
-    # set up threshold for valid range
-    threshold = max(power_ir) + rolloff_value
-
-    _, gd_ir = group_delay((y, 1), n_fft)
-
-    return np.median(gd_ir[power_ir > threshold]) / sr
-
-
-
-def read_data(audio_folder, audio_fname, ir_fname, fs):
+def read_audio(audio_folder, audio_fname, fs):
 
     y_sig, sr_sig = librosa.core.load(
         os.path.join(audio_folder, audio_fname),sr=fs)
 
-    y_ir, sr_ir = librosa.core.load(ir_fname, sr=fs)
-
-    return y_sig, sr_sig, y_ir, sr_ir
+    return y_sig, sr_sig
 
 
-def convolove_with_ir(y_sig, y_ir, mode='same'):
+def conv_with_ir(y_sig, y_ir, mode='same'):
 
     y_conv = fftconvolve(y_sig, y_ir, mode=mode)
 
@@ -115,8 +90,6 @@ ir_audio = './IR_greathall.wav'
 
 fs=22050
 
-'''call functions here'''
-
 fnlist = ['2_DG_take1_3_3_2_2.wav',
           '3_CSD_ER_3_3_2_4.wav', '0_CSD_ND_2_2_1_4.wav',
           '1_CSD_ER_3_2_2_1.wav', '1_WU_take1_1_2_1_1.wav',
@@ -125,17 +98,33 @@ fnlist = ['2_DG_take1_3_3_2_2.wav',
           '3_DG_take2_1_2_3_1.wav', '3_CSD_LI_4_4_4_1.wav']
 
 
+'''call functions here'''
+
+# test different rolloff values
+# rolloff = np.arange(-15, -30)
+
+y_ir, sr_ir = read_impulse(ir_audio, fs=fs)
+gd = muda.deformers.median_group_delay(y_ir, fs, n_fft=2048, rolloff_value=-24)
+print("GroupDelay for GreatHall from ISOPHONICS is {}.".format(gd))
+
 
 for fn in fnlist:
 
-    y_sig, sr_sig, y_ir, sr_ir = read_data(audio_folder, fn, ir_audio, fs)
-    y_conv = convolove_with_ir(y_sig, y_ir)
+    # read original audio file
+    y_sig, sr_sig = read_audio(audio_folder, fn, fs)
 
+    # read IR
+    y_ir, _ = read_impulse(ir_audio, fs=fs)
+
+    # convolution between audio and IR
+    y_conv = conv_with_ir(y_sig, y_ir)
+
+    # save output of the convolution
     wavfile.write(os.path.join(new_audio_folder, fn), rate=fs, data=y_conv)
 
-    gd = median_group_delay(y_sig, fs)
 
-    print("GroupDelay for {} is {}.".format(fn, gd))
+
+
 
 
 
