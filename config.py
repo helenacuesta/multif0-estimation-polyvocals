@@ -12,6 +12,8 @@ import numpy as np
 audio_save_folder = '/scratch/hc2945/multif0/AudioMixtures/'
 data_save_folder = '/scratch/hc2945/multif0/AudioMixtures/'
 
+bq_audio_folder = '/scratch/hc2945/multif0/'
+
 csd_folder = '/scratch/hc2945/multif0/CSD/individuals/'
 ecs_folder = '/scratch/hc2945/multif0/ECS/individuals/'
 dcs_folder = '/scratch/hc2945/multif0/DCS/individuals/'

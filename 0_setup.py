@@ -8,6 +8,8 @@ The code is specifically written for these datasets, but can be easily adapted t
 import sox
 import os
 
+import pandas as pd
+
 import config
 import utils
 
@@ -281,6 +283,56 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, compute_audio_mix=True, co
 
         print('{} quartets mixed and exported'.format(song))
 
+    # Barbershop quartets
+    bq = pd.read_csv('BQ_info.csv').values
+
+    dict_bq = dict()
+
+    voices = [bq[0, 1], bq[0, 2], bq[0, 3], bq[0, 4]]
+    endname = bq[0, 7]
+
+    idx = 0
+    for song in bq[:, 0]:
+        idx += 1
+        for parts in bq[:, 6]:
+            P = int(parts) + 1
+
+            for i in range(1, P):
+                basename = "{}_{}_part{}".format(idx, song, i)
+                dict_bq[basename + '_mix.wav'] = dict()
+                dict_bq[basename + '_mix.wav']['audiopath'] = bq_audio_folder
+                dict_bq[basename + '_mix.wav']['annot_folder'] = bq_audio_folder
+                dict_bq[basename + '_mix.wav']['annot_files'] = []
+
+                for voice in voices:
+                    fname = "{}_{}{}".format(basename, voice, endname)
+                    dict_bq[basename + '_mix.wav']['annot_files'].append(fname)
+
+    # Bach Chorales
+
+    bc = pd.read_csv('BC_info.csv').values
+
+    dict_bc = dict()
+
+    voices = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
+    endname = bc[0, 7]
+
+    idx = 0
+    for song in bc[:, 0]:
+        idx += 1
+        for parts in bc[:, 6]:
+            P = int(parts) + 1
+
+            for i in range(1, P):
+                basename = "{}_{}_part{}".format(idx, song, i)
+                dict_bc[basename + '_mix.wav'] = dict()
+                dict_bc[basename + '_mix.wav']['audiopath'] = bc_audio_folder
+                dict_bc[basename + '_mix.wav']['annot_folder'] = bc_audio_folder
+                dict_bc[basename + '_mix.wav']['annot_files'] = []
+
+                for voice in voices:
+                    fname = "{}_{}{}".format(basename, voice, endname)
+                    dict_bc[basename + '_mix.wav']['annot_files'].append(fname)
 
     # Store the metadata file
     if compute_metadata:
