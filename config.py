@@ -83,7 +83,7 @@ for s in sop:
 combos = np.array(combos, dtype=np.int32)
 dataset['ECS']['combos'] = combos
 
-'''Dagstuhl ChoiSet
+'''Dagstuhl ChoirSet
 '''
 
 dcs_settings = ['All', 'QuartetA', 'QuartetB']
