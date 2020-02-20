@@ -43,6 +43,44 @@ def get_hcqt_params():
     hop_length = 256
     return bins_per_octave, n_octaves, harmonics, sr, fmin, hop_length, over_sample
 
+import numpy as np
+import pandas as pd
+import mir_eval
+import librosa
+
+import os
+
+def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
+    '''This function takes a CSV file with smoothedpitchtrack info from pYIN
+    and adds zeros in the unvoiced frames.
+    '''
+    x, fs = librosa.core.load(os.path.join(audio_path, audio_fname), sr=fs)
+
+    if pyin_fname.endswith('csv'):
+        pyi = pd.read_csv(os.path.join(pyin_path, pyin_fname), header=None).values
+
+    elif pyin_fname.endswith('f0'):
+        pyi = np.loadtxt(os.path.join(pyin_path, pyin_fname))
+
+    else:
+        print("Wrong annotation file format found.")
+        quit()
+
+    hopsize = 256
+    l_samples = len(x)
+    del x
+    time_pyin = mir_eval.melody.constant_hop_timebase(hop=hopsize, end_time=l_samples) / fs
+
+    # times_pyin uses the same hopsize as the original pyin so we can directly compare them
+    pyin_new = np.zeros([len(time_pyin), 2])
+    _, _, idx_y = np.intersect1d(np.float32(pyi[:, 0]), np.float32(time_pyin), return_indices=True)
+
+    pyin_new[idx_y, 1] = pyi[:, 1]
+    pyin_new[:, 0] = time_pyin
+
+    pd.DataFrame(pyin_new).to_csv(os.path.join(pyin_path, 'constant_timebase', pyin_fname), header=None, index=False)
+
+
 def get_freq_grid():
     """Get the hcqt frequency grid
     """
