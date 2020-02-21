@@ -55,7 +55,6 @@ def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
     and adds zeros in the unvoiced frames.
     '''
     x, fs = librosa.core.load(os.path.join(audio_path, audio_fname), sr=fs)
-    import pdb; pdb.set_trace()
     if pyin_fname.endswith('csv'):
         pyi = pd.read_csv(os.path.join(pyin_path, pyin_fname), header=None).values
 
