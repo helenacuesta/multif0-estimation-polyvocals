@@ -5,6 +5,7 @@ Dataset structure is created here
 
 import itertools
 import numpy as np
+import pandas as pd
 
 
 '''Paths
@@ -17,6 +18,8 @@ bq_audio_folder = '/scratch/hc2945/multif0/'
 csd_folder = '/scratch/hc2945/data/CSD/'
 ecs_folder = '/scratch/hc2945/data/ECS/'
 dcs_folder = '/scratch/hc2945/data/DagstuhlChoirSet_V1.0/audio_wav_22050_mono/'
+bc_folder = '/scratch/hc2945/data/BachChorales/BC/'
+bsq_folder = '/scratch/hc2945/data/BarbershopQuartets/BQ/'
 
 
 '''All variables and parameters related to the dataset creation
@@ -217,42 +220,30 @@ for song in dcs_songs_qb:
 '''
 dataset['BC']['songs'] = []
 
-'''
-for song in dcs_songs:
-    for idx in augmentation_idx:
-        if 'All' in song:
-            dataset['DCS']['All']['songs'].append(idx + song)
+bc = pd.read_csv('BC_info.csv').values
 
-        elif 'QuartetA' in song:
-            dataset['DCS']['QuartetA']['songs'].append(idx + song)
+dict_bc = dict()
 
-        elif 'QuartetB' in song:
-            dataset['DCS']['QuartetB']['songs'].append(idx + song)
+voices = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
+endname = bc[0, 7]
 
-        else:
-            print("Wrong setting for the DCS")
+idx=0
+for song in bc[:, 0]:
+    idx += 1
+    for parts in bc[:, 6]:
+        P = int(parts) + 1
+        for i in range(1, P):
+            basename = "{}_{}_part{}".format(idx, song, i)
+            dict_bc[basename + '_mix.wav'] = dict()
+            dict_bc[basename + '_mix.wav']['audiopath'] = bc_folder
+            dict_bc[basename + '_mix.wav']['annot_folder'] = bc_folder
+            dict_bc[basename + '_mix.wav']['annot_files'] = []
 
-for setting in dcs_settings:
-    dataset['DCS'][setting] = dict()
-    dataset['DCS'][setting]['songs'] = []
-    dataset['DCS'][setting]['singers'] = dict()
-
-#dataset['DCS']['All']['singers']['lrx'] = singers_all_lrx
-dataset['DCS']['All']['singers']['dyn'] = singers_all_dyn
-dataset['DCS']['QuartetA']['singers'] = singers_QA
-dataset['DCS']['QuartetB']['singers'] = singers_QB
-
-combo_dyn = np.array([1, 2, 2, 2], dtype=np.int32)
-dataset['DCS']['All']['dyn_combos'] = combo_dyn
+            for voice in voices:
+                fname = "{}_{}{}".format(basename, voice, endname)
+                dict_bc[basename + '_mix.wav']['annot_files'].append(fname)
 
 
-singers_per_section = 2
-x = np.arange(1, singers_per_section + 1).astype(np.int32)
-combos_lrx = [p for p in itertools.product(x, repeat=4)]
-dataset['DCS']['All']['lrx_combos'] = combos_lrx
-
-dataset['DCS']['QuartetA']['combos'] = np.array([2, 1, 1, 1], dtype=np.int32)
-dataset['DCS']['QuartetB']['combos'] = np.array([1, 2, 2, 2], dtype=np.int32)'''
 
 
 
