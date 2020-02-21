@@ -55,7 +55,7 @@ def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
     and adds zeros in the unvoiced frames.
     '''
     x, fs = librosa.core.load(os.path.join(audio_path, audio_fname), sr=fs)
-
+    import pdb; pdb.set_trace()
     if pyin_fname.endswith('csv'):
         pyi = pd.read_csv(os.path.join(pyin_path, pyin_fname), header=None).values
 
@@ -73,8 +73,7 @@ def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
 
     # times_pyin uses the same hopsize as the original pyin so we can directly compare them
     pyin_new = np.zeros([len(time_pyin), 2])
-    _, _, idx_y = np.intersect1d(np.float32(pyi[:, 0]), np.float32(time_pyin), return_indices=True)
-
+    _, _, idx_y = np.intersect1d(np.around(pyi[:, 0], decimals=5), np.around(time_pyin, decimals=5), return_indices=True)
     pyin_new[idx_y, 1] = pyi[:, 1]
     pyin_new[:, 0] = time_pyin
 
