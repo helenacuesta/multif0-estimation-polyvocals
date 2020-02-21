@@ -9,9 +9,12 @@ This is a stand-alone script that is executed even before the setup process.
 import muda
 import jams
 import numpy as np
+import pandas as pd
 
 import os
 import argparse
+
+import utils
 
 
 def create_jams(times, freqs, outfile):
@@ -24,8 +27,8 @@ def create_jams(times, freqs, outfile):
     pitch_a = jams.Annotation(namespace='pitch_contour')
     pitch_a.annotation_metadata.data_source = "Tony pitch estimation + manual correction"
     pitch_a.annotation_metadata.annotation_tools = "Tony"
-    pitch_a.annotation_metadata.curator = jams.Curator(name="Helena Cuesta",
-                                                       email="helena.cuesta@upf.edu")
+    #pitch_a.annotation_metadata.curator = jams.Curator(name="Helena Cuesta",
+    #                                                       email="helena.cuesta@upf.edu")
 
     for t, p in zip(times, freqs):
 
@@ -50,9 +53,14 @@ def create_jams(times, freqs, outfile):
 
 #####################################################################################
 
-def read_annotations_f0(path_to_file):
+def read_annotations_f0(annot_fname, annot_path):
 
-    annotation = np.loadtxt(path_to_file)
+    if annot_fname.endswith('f0'):
+        annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
+    elif annot_fname.endswith('csv'):
+        annotation = pd.read_csv(os.path.join(annot_path, annot_fname), header=None).values
+    else:
+        print("Invalid annotation file format for {}".format(annot_fname))
 
     return annotation[:, 0], annotation[:, 1]
 
@@ -77,30 +85,69 @@ def pitch_shifting(audio_fname, jams_fname, audio_folder, jams_folder, n_samples
 
 #####################################################################################
 
-#path_to_annotations = '/Volumes/MTGMIR/ChoralSingingDataset'
+def add_unvoiced_frames(annot_path, format='csv'):
 
+    if not os.path.exists(os.path.join(annot_path, 'constant_timebase')):
+        os.mkdir(os.path.join(annot_path, 'constant_timebase'))
+
+    for fname in os.listdir(annot_path):
+        if not fname.endswith(format): continue
+        if not 'smoothedpitchtrack' in fname: continue
+
+        utils.pyin_to_unvoiced(annot_path, fname, annot_path, fname.replace('_vamp_pyin_pyin_smoothedpitchtrack.csv',
+                                                                            '.wav'))
+
+
+#####################################################################################
 
 def main(args):
 
+    # step 1 is fixing the non-unvoiced regions in the pYIN annotations when necessary
+    if args.pyin == 'yes':
+        add_unvoiced_frames(args.path_to_annotations)
+
+    # step 2 is converting annotation files to jams
     for fn in os.listdir(args.path_to_annotations):
 
-        if not fn.endswith('f0'): continue
+        if not fn.endswith('f0') or fn.endswith('csv'): continue
 
-        infile = os.path.join(args.path_to_annotations, fn)
+        orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
 
-        orig_times, orig_freqs = read_annotations_f0(infile)
-        create_jams(orig_times, orig_freqs, infile[:-2] + 'jams')
+        if fn.endswith('f0'):
+            outfile = os.path.join(args.path_to_annotations, fn.replace('f0', 'jams'))
+            create_jams(orig_times, orig_freqs,  outfile)
 
-        pitch_shifting(fn[:-2] + 'wav', fn[:-2]+'jams', args.path_to_annotations, args.path_to_annotations)
+        elif fn.endswith('csv'):
+            outfile = os.path.join(args.path_to_annotations, fn.replace('csv', 'jams'))
+            create_jams(orig_times, orig_freqs, outfile)
+
+        # step 3 is pitch-shifting audio and annotations accordingly
+        if fn.endswith('f0'):
+            pitch_shifting(fn.replace('f0', 'wav'), fn.replace('f0', 'jams'), args.path_to_audio,
+                           args.path_to_annotations)
+        elif fn.endswith('csv'):
+            pitch_shifting(fn.replace('csv', 'wav'), fn.replace('csv', 'jams'), args.path_to_audio,
+                           args.path_to_annotations)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Convert f0 annotations to jams format for further use.")
+        description="Several steps: (1) Convert f0 annotations to jams format for further use, (2) pitch-shifting for dataugm.")
 
     parser.add_argument("--f0-path",
                         dest='path_to_annotations',
                         type=str,
                         help="Path to folder with f0 files. ")
+
+    parser.add_argument("--audio-path",
+                        dest='path_to_audio',
+                        type=str,
+                        help="Path to folder with audio files. ")
+
+    parser.add_argument("--pyin",
+                        dest='pyin',
+                        type=str,
+                        help="If F0-trajectories come from pYIN they might not have unvoiced frames as 0. If 'yes', the code takes care of this. If 'no', "
+                             "it assumes unvoiced frames are OK and skips this.")
 
     main(parser.parse_args())
