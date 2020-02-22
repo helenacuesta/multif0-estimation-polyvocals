@@ -10,6 +10,7 @@
 
 module purge
 
+module load rubberband/intel/1.8.1
 module load ffmpeg/intel/3.2.2
 
 python data_augmentation.py --f0-path /scratch/hc2945/data/BachChorales/BC --audio-path /scratch/hc2945/data/BachChorales/BC --pyin yes

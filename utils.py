@@ -54,6 +54,7 @@ def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
     '''This function takes a CSV file with smoothedpitchtrack info from pYIN
     and adds zeros in the unvoiced frames.
     '''
+    print(audio_fname)
     x, fs = librosa.core.load(os.path.join(audio_path, audio_fname), sr=fs)
     if pyin_fname.endswith('csv'):
         pyi = pd.read_csv(os.path.join(pyin_path, pyin_fname), header=None).values
