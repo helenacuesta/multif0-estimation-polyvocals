@@ -144,7 +144,7 @@ def main(args):
 
             if not fn.endswith('f0'): continue
 
-            orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
+            orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations, dataset='ECS')
 
             outfile = os.path.join(args.path_to_annotations, fn.replace('f0', 'jams'))
             create_jams(orig_times, orig_freqs,  outfile)
