@@ -54,18 +54,22 @@ def create_jams(times, freqs, outfile):
 
 #####################################################################################
 
-def read_annotations_f0(annot_fname, annot_path):
+def read_annotations_f0(annot_fname, annot_path, dataset=None):
 
     if annot_fname.endswith('f0'):
-        # loadtxt fails with some ECS files
-        # annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
-        annotation = []
-        with open(os.path.join(annot_path, annot_fname), newline='\n') as f:
-            reader = csv.reader(f, delimiter='\t')
-            for line in reader:
-                if len(line) <= 2:
-                    annotation.append([np.float32(line[0]), np.float32(line[1])])
-            annotation = np.array(annotation)
+
+        if dataset == 'ECS':
+            # loadtxt fails with some ECS files
+            # annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
+            annotation = []
+            with open(os.path.join(annot_path, annot_fname), newline='\n') as f:
+                reader = csv.reader(f, delimiter='\t')
+                for line in reader:
+                    if len(line) <= 2:
+                        annotation.append([np.float32(line[0]), np.float32(line[1])])
+                annotation = np.array(annotation)
+        else:
+            annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
 
     elif annot_fname.endswith('csv'):
         annotation = pd.read_csv(os.path.join(annot_path, annot_fname), header=None).values
@@ -131,6 +135,23 @@ def main(args):
             # step 3 is pitch-shifting audio and annotations accordingly
             pitch_shifting(new_fname.replace('_pyin.jams', '.wav'), new_fname, args.path_to_audio,
                            os.path.join(args.path_to_annotations, 'constant_timebase'))
+
+
+    elif args.dataset == 'ECS':
+        # step 2 is converting annotation files to jams
+        for fn in os.listdir(args.path_to_annotations):
+
+            if not fn.endswith('f0'): continue
+
+            orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
+
+            outfile = os.path.join(args.path_to_annotations, fn.replace('f0', 'jams'))
+            create_jams(orig_times, orig_freqs,  outfile)
+
+            # step 3 is pitch-shifting audio and annotations accordingly
+
+            pitch_shifting(fn.replace('f0', 'wav'), fn.replace('f0', 'jams'), args.path_to_audio,
+                           args.path_to_annotations)
 
     else:
         # step 2 is converting annotation files to jams
