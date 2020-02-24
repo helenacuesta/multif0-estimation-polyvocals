@@ -13,6 +13,7 @@ import pandas as pd
 
 import os
 import argparse
+import csv
 
 import utils
 
@@ -56,7 +57,16 @@ def create_jams(times, freqs, outfile):
 def read_annotations_f0(annot_fname, annot_path):
 
     if annot_fname.endswith('f0'):
-        annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
+        # loadtxt fails with some ECS files
+        # annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
+        annotation = []
+        with open('SC1_take2_A2.f0', newline='\n') as f:
+            reader = csv.reader(f, delimiter='\t')
+            for line in reader:
+                if len(line) <= 2:
+                    annotation.append([np.float32(line[0]), np.float32(line[1])])
+            annotation = np.array(annotation)
+
     elif annot_fname.endswith('csv'):
         annotation = pd.read_csv(os.path.join(annot_path, annot_fname), header=None).values
     else:
