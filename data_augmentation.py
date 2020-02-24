@@ -60,7 +60,7 @@ def read_annotations_f0(annot_fname, annot_path):
         # loadtxt fails with some ECS files
         # annotation = np.loadtxt(os.path.join(annot_path, annot_fname))
         annotation = []
-        with open('SC1_take2_A2.f0', newline='\n') as f:
+        with open(os.path.join(annot_path, annot_fname), newline='\n') as f:
             reader = csv.reader(f, delimiter='\t')
             for line in reader:
                 if len(line) <= 2:
@@ -95,7 +95,7 @@ def pitch_shifting(audio_fname, jams_fname, audio_folder, jams_folder, n_samples
 
 #####################################################################################
 
-def add_unvoiced_frames(annot_path, format='csv'):
+def add_unvoiced_frames(annot_path, audio_path, format='csv'):
 
     if not os.path.exists(os.path.join(annot_path, 'constant_timebase')):
         os.mkdir(os.path.join(annot_path, 'constant_timebase'))
@@ -104,7 +104,7 @@ def add_unvoiced_frames(annot_path, format='csv'):
         if not fname.endswith(format): continue
         if not 'smoothedpitchtrack' in fname: continue
 
-        utils.pyin_to_unvoiced(annot_path, fname, annot_path, fname.replace('_vamp_pyin_pyin_smoothedpitchtrack.csv',
+        utils.pyin_to_unvoiced(annot_path, fname, audio_path, fname.replace('_vamp_pyin_pyin_smoothedpitchtrack.csv',
                                                                             '.wav'))
 
 
@@ -112,32 +112,49 @@ def add_unvoiced_frames(annot_path, format='csv'):
 
 def main(args):
 
-    # step 1 is fixing the non-unvoiced regions in the pYIN annotations when necessary
-    if args.pyin == 'yes':
-        add_unvoiced_frames(args.path_to_annotations)
+    # fix pYIN annotations for BC and BSQ and then keep going. After this, annot folder becomes constant_timebase
+    if args.dataset == 'BC' or args.dataset == 'BSQ':
 
-    # step 2 is converting annotation files to jams
-    for fn in os.listdir(args.path_to_annotations):
+        add_unvoiced_frames(args.path_to_annotations, args.path_to_audio)
 
-        if not fn.endswith('f0') or fn.endswith('csv'): continue
+        # once unvoiced frames are fixed, data augmentation steps for audio and annotations (CSV)
+        for fn in os.listdir(os.path.join(args.path_to_annotations, 'constant_timebase')):
 
-        orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
+            if not fn.endswith('csv'): continue
 
-        if fn.endswith('f0'):
-            outfile = os.path.join(args.path_to_annotations, fn.replace('f0', 'jams'))
-            create_jams(orig_times, orig_freqs,  outfile)
+            orig_times, orig_freqs = read_annotations_f0(fn, os.path.join(args.path_to_annotations, 'constant_timebase'))
 
-        elif fn.endswith('csv'):
-            outfile = os.path.join(args.path_to_annotations, fn.replace('csv', 'jams'))
+            new_fname = fn.replace('_vamp_pyin_pyin_smoothedpitchtrack.csv', '_pyin.jams')
+            outfile = os.path.join(args.path_to_annotations, 'constant_timebase', new_fname)
             create_jams(orig_times, orig_freqs, outfile)
 
-        # step 3 is pitch-shifting audio and annotations accordingly
-        if fn.endswith('f0'):
-            pitch_shifting(fn.replace('f0', 'wav'), fn.replace('f0', 'jams'), args.path_to_audio,
-                           args.path_to_annotations)
-        elif fn.endswith('csv'):
-            pitch_shifting(fn.replace('csv', 'wav'), fn.replace('csv', 'jams'), args.path_to_audio,
-                           args.path_to_annotations)
+            # step 3 is pitch-shifting audio and annotations accordingly
+            pitch_shifting(new_fname.replace('_pyin.jams', '.wav'), new_fname, args.path_to_audio,
+                           os.path.join(args.path_to_annotations, 'constant_timebase'))
+
+    else:
+        # step 2 is converting annotation files to jams
+        for fn in os.listdir(args.path_to_annotations):
+
+            if not fn.endswith('f0') or fn.endswith('csv'): continue
+
+            orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
+
+            if fn.endswith('f0'):
+                outfile = os.path.join(args.path_to_annotations, fn.replace('f0', 'jams'))
+                create_jams(orig_times, orig_freqs,  outfile)
+
+            elif fn.endswith('csv'):
+                outfile = os.path.join(args.path_to_annotations, fn.replace('csv', 'jams'))
+                create_jams(orig_times, orig_freqs, outfile)
+
+            # step 3 is pitch-shifting audio and annotations accordingly
+            if fn.endswith('f0'):
+                pitch_shifting(fn.replace('f0', 'wav'), fn.replace('f0', 'jams'), args.path_to_audio,
+                               args.path_to_annotations)
+            elif fn.endswith('csv'):
+                pitch_shifting(fn.replace('csv', 'wav'), fn.replace('csv', 'jams'), args.path_to_audio,
+                               args.path_to_annotations)
 
 
 if __name__ == "__main__":
@@ -154,10 +171,16 @@ if __name__ == "__main__":
                         type=str,
                         help="Path to folder with audio files. ")
 
+    parser.add_argument("--dataset",
+                        dest="dataset",
+                        type=str,
+                        help="Indicate the dataset to process: BC / BSQ / CSD / ECS / DCS")
+    '''
     parser.add_argument("--pyin",
                         dest='pyin',
                         type=str,
                         help="If F0-trajectories come from pYIN they might not have unvoiced frames as 0. If 'yes', the code takes care of this. If 'no', "
                              "it assumes unvoiced frames are OK and skips this.")
+    '''
 
     main(parser.parse_args())
