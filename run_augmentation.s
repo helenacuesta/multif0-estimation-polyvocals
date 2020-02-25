@@ -22,8 +22,8 @@ module load ffmpeg/intel/3.2.2
 #python data_augmentation.py --f0-path /scratch/hc2945/data/CSD --audio-path /scratch/hc2945/data/CSD --dataset CSD
 #echo CSD done!
 
-python data_augmentation.py --f0-path /scratch/hc2945/data/ECS --audio-path /scratch/hc2945/data/ECS --dataset ECS
-echo ECS done!
+#python data_augmentation.py --f0-path /scratch/hc2945/data/ECS --audio-path /scratch/hc2945/data/ECS --dataset ECS
+#echo ECS done!
 
 python data_augmentation.py --f0-path /scratch/hc2945/data/DCS/annotations_csv_F0_PYIN --audio-path /scratch/hc2945/data/DCS/audio_wav_22050_mono --dataset DCS
 echo DCS done!

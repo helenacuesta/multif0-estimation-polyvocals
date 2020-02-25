@@ -157,7 +157,7 @@ def main(args):
         # step 2 is converting annotation files to jams
         for fn in os.listdir(args.path_to_annotations):
 
-            if not fn.endswith('f0') or fn.endswith('csv'): continue
+            if not fn.endswith('f0') or not fn.endswith('csv'): continue
 
             orig_times, orig_freqs = read_annotations_f0(fn, args.path_to_annotations)
 
