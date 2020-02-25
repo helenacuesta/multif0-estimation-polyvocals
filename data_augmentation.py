@@ -65,7 +65,7 @@ def read_annotations_f0(annot_fname, annot_path, dataset=None):
             with open(os.path.join(annot_path, annot_fname), newline='\n') as f:
                 reader = csv.reader(f, delimiter='\t')
                 for line in reader:
-                    annotation.append([np.float32(line[0]), np.float32(line[1])])
+                    annotation.append([float(line[0]), float(line[1])])
                 annotation = np.array(annotation)
         else:
             print("CSD: {}".format(annot_path))
