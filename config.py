@@ -13,11 +13,11 @@ import pandas as pd
 audio_save_folder = '/scratch/hc2945/data/audiomixtures/'
 data_save_folder = '/scratch/hc2945/data/mf0annotations/'
 
-bq_audio_folder = '/scratch/hc2945/multif0/'
 
+# audio folders
 csd_folder = '/scratch/hc2945/data/CSD/'
 ecs_folder = '/scratch/hc2945/data/ECS/'
-dcs_folder = '/scratch/hc2945/data/DagstuhlChoirSet_V1.0/audio_wav_22050_mono/'
+dcs_folder = '/scratch/hc2945/data/DCS/audio_wav_22050_mono/'
 bc_folder = '/scratch/hc2945/data/BachChorales/BC/'
 bsq_folder = '/scratch/hc2945/data/BarbershopQuartets/BQ/'
 
@@ -128,6 +128,7 @@ for s in sop:
 combos = np.array(combos, dtype=np.int32)
 dataset['ECS']['DH_combos'] = combos
 
+
 ''' Seele Christi
 '''
 
@@ -173,7 +174,6 @@ dcs_settings = ['All', 'QuartetA', 'QuartetB']
 singers_QB = ['S1_DYN', 'A2_DYN', 'T2_DYN', 'B2_DYN']
 singers_QA = ['S2_DYN', 'A1_DYN', 'T1_DYN', 'B1_DYN']
 singers_all_dyn = ['S1_DYN', 'A2_DYN', 'T2_DYN', 'B2_DYN']
-#singers_all_lrx = ['S1_LRX', 'S2_LRX', 'A1_LRX', 'A2_LRX', 'T1_LRX', 'T2_LRX', 'B1_LRX', 'B2_LRX']
 
 '''dcs_songs = [
     'DLI_All_Take1_', 'DLI_All_Take2_', 'DLI_All_Take3_',
@@ -218,6 +218,41 @@ for song in dcs_songs_qb:
 
 ''' Bach Chorales
 '''
+bc = pd.read_csv('BC_info.csv').values
+
+dataset['BC']['songs'] = []
+dataset['BC']['num_parts'] = []
+idx=0
+for song in bc[:, 0]:
+    idx += 1
+    basename = "{}_{}".format(idx, song)
+    for aug_idx in augmentation_idx:
+        dataset['BC']['songs'].append(aug_idx + basename)
+        dataset['BC']['num_parts'].append(bc[idx-1, 6])
+
+dataset['BC']['singers'] = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
+#dataset['BC']['num_parts'] = bc[:, 6]
+
+
+'''Barbershop Quartets
+'''
+bq = pd.read_csv('BQ_info.csv').values
+
+dataset['BSQ']['songs'] = []
+dataset['BSQ']['num_parts'] = []
+idx=0
+for song in bq[:, 0]:
+    idx += 1
+    basename = "{}_{}".format(idx, song)
+    for aug_idx in augmentation_idx:
+        dataset['BSQ']['songs'].append(aug_idx + basename)
+        dataset['BSQ']['num_parts'].append(bq[idx-1, 6])
+
+dataset['BSQ']['singers'] = [bq[0, 1], bq[0, 2], bq[0, 3], bq[0, 4]]
+#dataset['BSQ']['num_parts'] = bq[:, 6]
+
+
+'''
 dataset['BC']['songs'] = []
 
 bc = pd.read_csv('BC_info.csv').values
@@ -240,12 +275,37 @@ for song in bc[:, 0]:
             dict_bc[basename + '_mix.wav']['annot_files'] = []
 
             for voice in voices:
-                fname = "{}_{}{}".format(basename, voice, endname)
+                fname = "{}_{}{}".format(basename, voice, '_1ch.jams')
                 dict_bc[basename + '_mix.wav']['annot_files'].append(fname)
 
+##
 
+dataset['BSQ']['songs'] = []
 
+bq = pd.read_csv('BQ_info.csv').values
 
+dict_bq = dict()
+
+voices = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
+endname = bc[0, 7]
+
+idx=0
+for song in bc[:, 0]:
+    idx += 1
+    for parts in bc[:, 6]:
+        P = int(parts) + 1
+        for i in range(1, P):
+            basename = "{}_{}_part{}".format(idx, song, i)
+            dict_bc[basename + '_mix.wav'] = dict()
+            dict_bc[basename + '_mix.wav']['audiopath'] = bc_folder
+            dict_bc[basename + '_mix.wav']['annot_folder'] = bc_folder
+            dict_bc[basename + '_mix.wav']['annot_files'] = []
+
+            for voice in voices:
+                fname = "{}_{}{}".format(basename, voice, '_1ch.jams')
+                dict_bc[basename + '_mix.wav']['annot_files'].append(fname)
+
+'''
 
 '''Training parameters
 '''

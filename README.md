@@ -1,13 +1,22 @@
-# Multi-f0 Estimation in Vocal Polyphonic Recordings
+# Multi-F0 Estimation in Vocal Polyphonic Recordings
 
 This README file is a work in progress. We start by stating the order that the user should
 follow when running the code.
 
-1. *data_augmentation*: pitch-shifting the individual audio recordings for the three datasets. This
-is an automated process and if you plan to use other data the code needs to be adapted to it. This script 
-also converts annotations in text format (.f0 files) into jams format.
+1. ```data_augmentation```: first applying some corrections to the pYIN annotations of BC and BSQ datasets. 
+Then, convert all annotation files (either f0 files or csv files) to **jams** for convenience.
+Finally, pitch-shifting the individual audio recordings for all datasets. 
+All the code is specific for the datasets used in the original project. If using other data, it needs
+to be adapted to the new formats.
 
-2. *0_setup*: create the dataset structure, and create audio mixtures and associated annotations.
+2. ```config```: this script helps making the data preparation easier. It covers the basics of the structure
+of each dataset: song names, singers, 
+
+3. ```0_setup```: using the info from ```config```, this script creates the whole dataset structure, and generates
+the audio mixtures and associated annotations for further processing. It's the first step of data preparation,
+before feature computation. Use the mtracks 
+
+4. ```1_prep```: feature and target computation from all audio mixtures
 
 3. *1_prep*: create the input features (HCQT+Phase differentials) and targets (blurred activation map) and also 
 the json file with the data splits: train, test, validation.
