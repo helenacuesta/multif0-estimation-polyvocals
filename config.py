@@ -17,9 +17,12 @@ data_save_folder = '/scratch/hc2945/data/mf0annotations/'
 # audio folders
 csd_folder = '/scratch/hc2945/data/CSD/'
 ecs_folder = '/scratch/hc2945/data/ECS/'
-dcs_folder = '/scratch/hc2945/data/DCS/audio_wav_22050_mono/'
-bc_folder = '/scratch/hc2945/data/BachChorales/BC/'
-bsq_folder = '/scratch/hc2945/data/BarbershopQuartets/BQ/'
+dcs_folder_audio = '/scratch/hc2945/data/DCS/audio_wav_22050_mono/'
+dcs_folder_annot = '/scratch/hc2945/data/DCS/annotations_csv_F0_PYIN/'
+bc_folder_audio = '/scratch/hc2945/data/BachChorales/BC/'
+bc_folder_annot = '/scratch/hc2945/data/BachChorales/BC/pyin_annot/constant_timebase/'
+bsq_folder_audio = '/scratch/hc2945/data/BarbershopQuartets/BQ/'
+bsq_folder_annot = '/scratch/hc2945/data/BarbershopQuartets/BQ/pyin_annot/constant_timebase'
 
 
 '''All variables and parameters related to the dataset creation

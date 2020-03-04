@@ -18,70 +18,41 @@ import config
 import utils
 
 
-def combine_audio_files(piece, filenames, output_fname, mode, reverb):
+def combine_audio_files(params):
 
-    #### Choral Singing Dataset
-    if mode == 'csd':
+    cmb = sox.Combiner()
+    cmb.convert(samplerate=22050)
+    cmb.build(
+        [
+            os.path.join(params['audio_folder'], params['filenames'][0]),
+            os.path.join(params['audio_folder'], params['filenames'][1]),
+            os.path.join(params['audio_folder'], params['filenames'][2]),
+            os.path.join(params['audio_folder'], params['filenames'][3])
+        ],
+        os.path.join(config.audio_save_folder, params['output_fname']), 'mix')  # , 'mix', input_volumes=[0.6, 0.3, 0.3, 0.3])
 
-        cmb = sox.Combiner()
-        cmb.convert(samplerate=22050)
-        cmb.build(
-            [config.csd_folder + filenames[0], config.csd_folder + filenames[1],
-             config.csd_folder + filenames[2], config.csd_folder + filenames[3]],
-            os.path.join(config.audio_save_folder, output_fname), 'mix')  # , 'mix', input_volumes=[0.6, 0.3, 0.3, 0.3])
-
-        # if the reverb option is active, this creates the reverb audio files using an IR from Isophonics
-        if reverb:
-            y_ir, sr_ir = librosa.load('./ir/IR_greathall.wav', sr=22050)
-            y_sig, sr_sig = librosa.load(os.path.join(config.audio_save_folder, output_fname), sr=22050)
-            y_rev = scipy.signal.convolve(y_sig, y_ir, mode="full")
-            soundfile.write(os.path.join(config.audio_save_folder, 'reverb', output_fname), y_rev, samplerate=22050)
-
-
-    # TODO
-
-    #### ESMUC Choral Set
-    elif mode == 'ecs':
+    # if the reverb option is active, this creates the reverb audio files using an IR from Isophonics
+    if params['reverb']:
+        y_ir, sr_ir = librosa.load('./ir/IR_greathall.wav', sr=params['sr'])
+        y_sig, sr_sig = librosa.load(os.path.join(config.audio_save_folder, params['output_fname']), sr=params['sr'])
+        y_rev = scipy.signal.convolve(y_sig, y_ir, mode="full")
+        soundfile.write(os.path.join(config.audio_save_folder, 'reverb', params['output_fname']), y_rev, samplerate=params['sr'])
 
 
-        filenames = [
-            '{}S{}.wav'.format(piece, singer_idxs[0]),
-            '{}A{}.wav'.format(piece, singer_idxs[1]),
-            '{}T{}.wav'.format(piece, singer_idxs[2]),
-            '{}B{}.wav'.format(piece, singer_idxs[3]),
-        ]
+    '''cmb = sox.Combiner()
+    cmb.convert(samplerate=22050)
+    cmb.build(
+        [config.csd_folder + filenames[0], config.csd_folder + filenames[1],
+         config.csd_folder + filenames[2], config.csd_folder + filenames[3]],
+        os.path.join(config.audio_save_folder, output_fname), 'mix')  # , 'mix', input_volumes=[0.6, 0.3, 0.3, 0.3])
 
-        cmb = sox.Combiner()
-        cmb.convert(samplerate=22050)
-        cmb.build(
-            [config.ecs_folder + filenames[0], config.ecs_folder + filenames[1],
-             config.ecs_folder + filenames[2], config.ecs_folder + filenames[3]],
-            os.path.join(config.audio_save_folder, output_fname), 'mix', input_volumes=[0.55, 0.3, 0.4, 0.3]
-        )
+    # if the reverb option is active, this creates the reverb audio files using an IR from Isophonics
+    if reverb:
+        y_ir, sr_ir = librosa.load('./ir/IR_greathall.wav', sr=22050)
+        y_sig, sr_sig = librosa.load(os.path.join(config.audio_save_folder, output_fname), sr=22050)
+        y_rev = scipy.signal.convolve(y_sig, y_ir, mode="full")
+        soundfile.write(os.path.join(config.audio_save_folder, 'reverb', output_fname), y_rev, samplerate=22050)'''
 
-        tf = sox.Transformer()
-        tf.reverb(reverberance=100, pre_delay=30, high_freq_damping=80, wet_gain=4)
-        tf.build(os.path.join(config.audio_save_folder, output_fname),
-                 os.path.join(config.audio_save_folder, 'rev_' + output_fname))
-
-    #### Dagstuhl ChoirSet
-
-    elif mode == 'dcs':
-
-        cmb = sox.Combiner()
-        cmb.convert(samplerate=22050)
-        cmb.build(
-            [config.dcs_folder + filenames[0], config.dcs_folder + filenames[1],
-             config.dcs_folder + filenames[2], config.dcs_folder + filenames[3]],
-
-            os.path.join(config.audio_save_folder, output_fname), 'mix')
-
-        # if the reverb option is active, this creates the reverb audio files using an IR from Isophonics
-        if reverb:
-            y_ir, sr_ir = librosa.load('./ir/IR_greathall.wav', sr=22050)
-            y_sig, sr_sig = librosa.load(os.path.join(config.audio_save_folder, output_fname), sr=22050)
-            y_rev = scipy.signal.convolve(y_sig, y_ir, mode="full")
-            soundfile.write(os.path.join(config.audio_save_folder, 'reverb', output_fname), y_rev, samplerate=22050)
 
 
 
@@ -109,27 +80,30 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
     # ------------ Process Choral Singing Dataset ------------ #
 
-    D1 = dataset_ids[0] # CSD
-    mode = 'csd'
-
+    print("Processing Choral Singing Dataset...")
 
     for song in dataset['CSD']['songs']:
-
         for combo in dataset['CSD']['combos']:
 
-            filenames = [
+            params = {}
+            params['audio_folder'] = config.csd_folder
+            params['annot_folder'] = config.csd_folder
+            params['sr'] = 44100
+            params['reverb'] = True
+
+            params['filenames'] = [
                 '{}_soprano_{}.wav'.format(song, combo[0]),
                 '{}_alto_{}.wav'.format(song, combo[1]),
                 '{}_tenor_{}.wav'.format(song, combo[2]),
                 '{}_bass_{}.wav'.format(song, combo[3]),
             ]
 
-            output_fname = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+            params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
 
-            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, output_fname)):
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
 
                 # create audio mixture and its reverb version if indicated
-                combine_audio_files(song, filenames, output_fname, mode, reverb)
+                combine_audio_files(params)
 
             if compute_metadata:
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
@@ -138,7 +112,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                     '{}_tenor_{}.jams'.format(song, combo[2]), '{}_bass_{}.jams'.format(song, combo[3])
                 ]
 
-                mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.csd_folder)
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
                     print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
@@ -147,58 +121,31 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
     # ------------ Process ESMUC ChoralSet ------------ #
 
-    # In this dataset we do not have a uniform number of singers per part.
-    # We have: 4 sopranos, 3 altos, 3 tenors and 2 basses. Singer combinations need to be done accordingly.
-    '''
-    for song in dataset['CSD']['songs']:
-
-        for combo in dataset['CSD']['combos']:
-
-            filenames = [
-                '{}_soprano_{}.wav'.format(song, combo[0]),
-                '{}_alto_{}.wav'.format(song, combo[1]),
-                '{}_tenor_{}.wav'.format(song, combo[2]),
-                '{}_bass_{}.wav'.format(song, combo[3]),
-            ]
-
-            output_fname = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
-
-            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, output_fname)):
-
-                # create audio mixture and its reverb version if indicated
-                combine_audio_files(song, filenames, output_fname, mode, reverb)
-
-            if compute_metadata:
-                # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
-                annotation_files = [
-                    '{}_soprano_{}.jams'.format(song, combo[0]), '{}_alto_{}.jams'.format(song, combo[1]),
-                    '{}_tenor_{}.jams'.format(song, combo[2]), '{}_bass_{}.jams'.format(song, combo[3])
-                ]
-
-                mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.csd_folder)
-
-                if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
-    '''
-    mode = 'ecs'
+    print("Processing Choral Singing Dataset...")
 
     # Der Greis
     for song in dataset['ECS']['DG_songs']:
         for combo in dataset['ECS']['DG_combos']:
 
-            filenames = [
+            params = {}
+            params['audio_folder'] = config.ecs_folder
+            params['annot_folder'] = config.ecs_folder
+            params['sr'] = 22050
+            params['reverb'] = True
+
+            params['filenames'] = [
                 "{}_S{}.wav".format(song, combo[0]),
                 "{}_A{}.wav".format(song, combo[1]),
                 "{}_T{}.wav".format(song, combo[2]),
                 "{}_B{}.wav".format(song, combo[3])
             ]
 
-            output_fname = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+            params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
 
-            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, output_fname)):
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
 
                 # create audio mixture and its reverb version if indicated
-                combine_audio_files(song, filenames, output_fname, mode, reverb)
+                combine_audio_files(params)
 
             if compute_metadata:
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
@@ -207,7 +154,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                     '{}_T{}.jams'.format(song, combo[2]), '{}_B{}.jams'.format(song, combo[3])
                 ]
 
-                mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.ecs_folder)
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
                     print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
@@ -220,42 +167,96 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
     for song in dataset['ECS']['DH_songs']:
         for combo in dataset['ECS']['DG_combos']:
 
-            filenames = [
-                "{}_{}.wav".format(song, dataset['ECS']['DH_singers'][combo[0]]),
-                "{}_{}.wav".format(song, combo[1]),
-                "{}_{}.wav".format(song, combo[2]),
-                "{}_{}.wav".format(song, combo[3])
+            params = {}
+            params['audio_folder'] = config.ecs_folder
+            params['annot_folder'] = config.ecs_folder
+            params['sr'] = 22050
+            params['reverb'] = True
+
+            params['filenames'] = [
+                "{}_{}.wav".format(song, dataset['ECS']['DH_singers'][combo[0]-1]),
+                "{}_{}.wav".format(song, dataset['ECS']['DH_singers'][combo[1]-1+5]),
+                "{}_{}.wav".format(song, dataset['ECS']['DH_singers'][combo[2]-1+7]),
+                "{}_{}.wav".format(song, dataset['ECS']['DH_singers'][combo[3]-1+10])
             ]
 
-            output_fname = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+            params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
 
-            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, output_fname)):
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
 
                 # create audio mixture and its reverb version if indicated
-                combine_audio_files(song, filenames, output_fname, mode, reverb)
+                combine_audio_files(params)
 
             if compute_metadata:
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
                 annotation_files = [
-                    '{}_S{}.jams'.format(song, combo[0]), '{}_A{}.jams'.format(song, combo[1]),
-                    '{}_T{}.jams'.format(song, combo[2]), '{}_B{}.jams'.format(song, combo[3])
+                    '{}_{}.jams'.format(song, dataset['ECS']['DH_singers'][combo[0]-1]),
+                    '{}_{}.jams'.format(song, dataset['ECS']['DH_singers'][combo[1]-1+5]),
+                    '{}_{}.jams'.format(song, dataset['ECS']['DH_singers'][combo[2]-1+7]),
+                    '{}_{}.jams'.format(song, dataset['ECS']['DH_singers'][combo[3]-1+10])
                 ]
 
-                mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.ecs_folder)
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
                     print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
 
         print('{} quartets mixed and exported'.format(song))
 
+        # Seele Christi
+
+        for song in dataset['ECS']['SC_songs']:
+            for combo in dataset['ECS']['SC_combos']:
+
+                params = {}
+                params['audio_folder'] = config.ecs_folder
+                params['annot_folder'] = config.ecs_folder
+                params['sr'] = 22050
+                params['reverb'] = True
+
+                params['filenames'] = [
+                    "{}_S{}.wav".format(song, combo[0]),
+                    "{}_A{}.wav".format(song, combo[1]),
+                    "{}_T{}.wav".format(song, combo[2]),
+                    "{}_B{}.wav".format(song, combo[3])
+                ]
+
+                params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+
+                if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                    # create audio mixture and its reverb version if indicated
+                    combine_audio_files(params)
+
+                if compute_metadata:
+                    # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
+                    annotation_files = [
+                        "{}_S{}.jams".format(song, combo[0]),
+                        "{}_A{}.jams".format(song, combo[1]),
+                        "{}_T{}.jams".format(song, combo[2]),
+                        "{}_B{}.jams".format(song, combo[3])
+                    ]
+
+                    mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
+                                                params['annot_folder'])
+
+                    if reverb:
+                        print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+
+            print('{} quartets mixed and exported'.format(song))
+
     # ------------ Process Dagstuhl ChoirSet ------------ #
 
-    mode = 'dcs'
 
     # Full Choir setting
     for song in dataset['DCS']['FC_songs']:
 
-        filenames = [
+        params = {}
+        params['audio_folder'] = config.dcs_folder_audio
+        params['annot_folder'] = config.dcs_folder_annot
+        params['sr'] = 22050
+        params['reverb'] = True
+
+        params['filenames'] = [
             "{}_{}.wav".format(song, dataset['DCS']['FC_singers'][0]),
             "{}_{}.wav".format(song, dataset['DCS']['FC_singers'][1]),
             "{}_{}.wav".format(song, dataset['DCS']['FC_singers'][2]),
@@ -263,10 +264,10 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         ]
 
         # no combos here, there are only four singers per song
-        output_fname = "{}_1_2_2_2.wav".format(song)
+        params['output_fname'] = "{}_1_2_2_2.wav".format(song)
 
-        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, output_fname)):
-            combine_audio_files(song, filenames, output_fname, mode=mode, reverb=reverb)
+        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+            combine_audio_files(params)
 
         if compute_metadata:
             annotation_files = [
@@ -276,7 +277,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 "{}_{}.jams".format(song, dataset['DCS']['FC_singers'][3])
             ]
 
-            mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.dcs_folder)
+            mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
                 print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
@@ -286,7 +287,13 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
     # Quartet A setting
     for song in dataset['DCS']['QA_songs']:
 
-        filenames = [
+        params = {}
+        params['audio_folder'] = config.dcs_folder_audio
+        params['annot_folder'] = config.dcs_folder_annot
+        params['sr'] = 22050
+        params['reverb'] = True
+
+        params['filenames'] = [
             "{}_{}.wav".format(song, dataset['DCS']['QA_singers'][0]),
             "{}_{}.wav".format(song, dataset['DCS']['QA_singers'][1]),
             "{}_{}.wav".format(song, dataset['DCS']['QA_singers'][2]),
@@ -294,10 +301,10 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         ]
 
         # no combos here, there are only four singers per song
-        output_fname = "{}_2_1_1_1.wav".format(song)
+        params['output_fname'] = "{}_2_1_1_1.wav".format(song)
 
-        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, output_fname)):
-            combine_audio_files(song, filenames, output_fname, mode=mode, reverb=reverb)
+        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+            combine_audio_files(params)
 
         if compute_metadata:
             annotation_files = [
@@ -307,7 +314,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][3])
             ]
 
-            mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.dcs_folder)
+            mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
                 print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
@@ -317,7 +324,13 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
     # Quartet B setting
     for song in dataset['DCS']['QB_songs']:
 
-        filenames = [
+        params = {}
+        params['audio_folder'] = config.dcs_folder_audio
+        params['annot_folder'] = config.dcs_folder_annot
+        params['sr'] = 22050
+        params['reverb'] = True
+
+        params['filenames'] = [
             "{}_{}.wav".format(song, dataset['DCS']['QB_singers'][0]),
             "{}_{}.wav".format(song, dataset['DCS']['QB_singers'][1]),
             "{}_{}.wav".format(song, dataset['DCS']['QB_singers'][2]),
@@ -325,10 +338,10 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         ]
 
         # no combos here, there are only four singers per song
-        output_fname = "{}_1_2_2_2.wav".format(song)
+        params['output_fname'] = "{}_1_2_2_2.wav".format(song)
 
-        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, output_fname)):
-            combine_audio_files(song, filenames, output_fname, mode=mode, reverb=reverb)
+        if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+            combine_audio_files(params)
 
         if compute_metadata:
             annotation_files = [
@@ -338,64 +351,89 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][3])
             ]
 
-            mtracks = create_dict_entry(mtracks, mixes_wavpath, output_fname, annotation_files, config.dcs_folder)
+            mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
                 print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
 
         print('{} quartets mixed and exported'.format(song))
 
+    # ------------ Process Barbershop Quartets ------------ #
 
-    # Barbershop quartets
-    bq = pd.read_csv('BQ_info.csv').values
+    for song in dataset['BSQ']['songs']:
+        for parts in dataset['BSQ']['num_parts']:
 
-    dict_bq = dict()
+            params = {}
+            params['audio_folder'] = config.bsq_folder_audio
+            params['annot_folder'] = config.bsq_folder_annot
+            params['sr'] = 44100
+            params['reverb'] = True
 
-    voices = [bq[0, 1], bq[0, 2], bq[0, 3], bq[0, 4]]
-    endname = bq[0, 7]
+            params['filenames'] = [
+                "{}_part{}_s_1ch.wav".format(song, parts),
+                "{}_part{}_a_1ch.wav".format(song, parts),
+                "{}_part{}_t_1ch.wav".format(song, parts),
+                "{}_part{}_b_1ch.wav".format(song, parts)
+            ]
 
-    idx = 0
-    for song in bq[:, 0]:
-        idx += 1
-        for parts in bq[:, 6]:
-            P = int(parts) + 1
+            params['output_fname'] = "{}_{}_satb.wav".format(song, parts)
 
-            for i in range(1, P):
-                basename = "{}_{}_part{}".format(idx, song, i)
-                dict_bq[basename + '_mix.wav'] = dict()
-                dict_bq[basename + '_mix.wav']['audiopath'] = bq_audio_folder
-                dict_bq[basename + '_mix.wav']['annot_folder'] = bq_audio_folder
-                dict_bq[basename + '_mix.wav']['annot_files'] = []
+            if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                combine_audio_files(params)
 
-                for voice in voices:
-                    fname = "{}_{}{}".format(basename, voice, endname)
-                    dict_bq[basename + '_mix.wav']['annot_files'].append(fname)
+            if compute_metadata:
+                annotation_files = [
+                    "{}_part{}_s_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_a_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_t_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_b_1ch_pyin.jams".format(song, parts)
+                ]
 
-    # Bach Chorales
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
-    bc = pd.read_csv('BC_info.csv').values
+                if reverb:
+                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
 
-    dict_bc = dict()
+        print('{} quartets mixed and exported'.format(song))
 
-    voices = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
-    endname = bc[0, 7]
+    # ------------ Process Bach Chorales ------------ #
 
-    idx = 0
-    for song in bc[:, 0]:
-        idx += 1
-        for parts in bc[:, 6]:
-            P = int(parts) + 1
+    for song in dataset['BC']['songs']:
+        for parts in dataset['BC']['num_parts']:
 
-            for i in range(1, P):
-                basename = "{}_{}_part{}".format(idx, song, i)
-                dict_bc[basename + '_mix.wav'] = dict()
-                dict_bc[basename + '_mix.wav']['audiopath'] = bc_audio_folder
-                dict_bc[basename + '_mix.wav']['annot_folder'] = bc_audio_folder
-                dict_bc[basename + '_mix.wav']['annot_files'] = []
+            params = {}
+            params['audio_folder'] = config.bc_folder_audio
+            params['annot_folder'] = config.bc_folder_annot
+            params['sr'] = 44100
+            params['reverb'] = True
 
-                for voice in voices:
-                    fname = "{}_{}{}".format(basename, voice, endname)
-                    dict_bc[basename + '_mix.wav']['annot_files'].append(fname)
+            params['filenames'] = [
+                "{}_part{}_s_1ch.wav".format(song, parts),
+                "{}_part{}_a_1ch.wav".format(song, parts),
+                "{}_part{}_t_1ch.wav".format(song, parts),
+                "{}_part{}_b_1ch.wav".format(song, parts)
+            ]
+
+            params['output_fname'] = "{}_{}_satb.wav".format(song, parts)
+
+            if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                combine_audio_files(params)
+
+            if compute_metadata:
+                annotation_files = [
+                    "{}_part{}_s_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_a_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_t_1ch_pyin.jams".format(song, parts),
+                    "{}_part{}_b_1ch_pyin.jams".format(song, parts)
+                ]
+
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
+
+                if reverb:
+                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+
+        print('{} quartets mixed and exported'.format(song))
+
 
     # Store the metadata file
     if compute_metadata:
