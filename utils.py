@@ -15,6 +15,7 @@ import jams
 import librosa
 import pescador
 import mir_eval
+import muda
 
 import keras.backend as K
 from scipy.ndimage import filters
@@ -22,6 +23,27 @@ from scipy.ndimage import filters
 
 '''General util functions
 '''
+
+''' Setup and data preparation util functions
+'''
+
+def shift_annotations(jams_path, jams_fname, audio_path, audio_fname):
+    ir_muda = muda.deformers.IRConvolution(ir_files='./ir/IR_greathall.wav', n_fft=2048, rolloff_value=-24)
+
+    # make sure the duration field in the jams file is not null
+    jm = jams.load(os.path.join(jams_path, jams_fname))
+    jm.annotations[0].duration = jm.file_metadata.duration
+    jm.save(os.path.join(jams_path, jams_fname))
+
+    # load jam and associated audio
+    jam = muda.load_jam_audio(os.path.join(jams_path, jams_fname), os.path.join(audio_path, audio_fname))
+
+    for s in ir_muda.states(jam):
+        ir_muda.deform_times(jam.annotations[0], s)
+
+    # store deformed annotations in the reverb folder
+    jam.save(os.path.join(jams_path, 'reverb', jams_fname))
+
 
 def save_json_data(data, save_path):
     with open(save_path, 'w') as fp:

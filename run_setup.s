@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=data_prep_v0
+#SBATCH --job-name=setup_v0
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=24:00:00

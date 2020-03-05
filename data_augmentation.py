@@ -36,14 +36,14 @@ def create_jams(times, freqs, outfile):
         if p != 0:
             pitch_a.append(
                 time=t,
-                duration=None,
+                duration=0.0,
                 value={'index': 0, 'frequency': p, 'voiced': True},
                 confidence=1.0
             )
         else:
             pitch_a.append(
                 time=t,
-                duration=None,
+                duration=0.0,
                 value={'index': 0, 'frequency': p, 'voiced': False},
                 confidence=1.0
             )

@@ -115,7 +115,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                    idx=-1
+                    for annot in annotation_files:
+                        idx+=1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'], params['filenames'][idx])
+
 
         print("Mixtures for {} have been created.".format(song))
 
@@ -157,7 +161,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                    idx=-1
+                    for annot in annotation_files:
+                        idx+=1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'], params['filenames'][idx])
+                    #print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -199,7 +207,10 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                    idx=-1
+                    for annot in annotation_files:
+                        idx+=1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'], params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -240,7 +251,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                                 params['annot_folder'])
 
                     if reverb:
-                        print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                        idx = -1
+                        for annot in annotation_files:
+                            idx += 1
+                            utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                    params['filenames'][idx])
 
             print('{} quartets mixed and exported'.format(song))
 
@@ -280,7 +295,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
-                print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                idx = -1
+                for annot in annotation_files:
+                    idx += 1
+                    utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                            params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -317,7 +336,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
-                print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                idx = -1
+                for annot in annotation_files:
+                    idx += 1
+                    utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                            params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -354,7 +377,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
             if reverb:
-                print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                idx = -1
+                for annot in annotation_files:
+                    idx += 1
+                    utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                            params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -392,7 +419,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                    idx = -1
+                    for annot in annotation_files:
+                        idx += 1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -430,7 +461,11 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
 
                 if reverb:
-                    print("Reverb annotations not created for the reverb versions. Working on annotation shift.")
+                    idx = -1
+                    for annot in annotation_files:
+                        idx += 1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
