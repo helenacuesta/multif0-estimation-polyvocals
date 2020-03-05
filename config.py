@@ -221,7 +221,7 @@ for song in dcs_songs_qb:
 
 ''' Bach Chorales
 '''
-bc = pd.read_csv('BC_info.csv').values
+bc = pd.read_csv('/scratch/hc2945/data/BC_info.csv').values
 
 dataset['BC']['songs'] = []
 dataset['BC']['num_parts'] = []
@@ -239,7 +239,7 @@ dataset['BC']['singers'] = [bc[0, 1], bc[0, 2], bc[0, 3], bc[0, 4]]
 
 '''Barbershop Quartets
 '''
-bq = pd.read_csv('BQ_info.csv').values
+bq = pd.read_csv('/scratch/hc2945/data/BQ_info.csv').values
 
 dataset['BSQ']['songs'] = []
 dataset['BSQ']['num_parts'] = []
