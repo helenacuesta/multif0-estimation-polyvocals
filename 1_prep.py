@@ -25,8 +25,10 @@ def define_parameters():
 
 def main(args):
 
+    # load dataset information from setup json file
     metad = utils.load_json_data(args.metadata_file)
 
+    # generate data splits and keep them fixed for the whole project
     splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
     utils.create_data_split(metad, splits_path)
 
@@ -50,7 +52,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generate input files and targets for multif0 learning.")
+        description="Generate input files and targets for multi-F0 learning.")
 
     parser.add_argument("--audio-path",
                         dest='wavmixes_path',
