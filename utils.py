@@ -153,21 +153,23 @@ def get_all_pitch_annotations(mtrack):
 
     annot_times = []
     annot_freqs = []
-    stem_annot_activity = {}
+    #stem_annot_activity = {}
     for stem in mtrack['annot_files']:
 
-        '''
-        Annotations are loaded HERE
+        '''Load annotations for each stem
         '''
         d = jams.load(os.path.join(mtrack['annot_folder'], stem))
         data = np.array(d.annotations[0].data)[:, [0, 2]]
 
+        '''
         times = data[:, 0]
         freqs = []
         for d in data[:, 1]:
             freqs.append(d['frequency'])
         freqs = np.array(freqs)
-
+        '''
+        times = data[:, 0]
+        freqs = data[:, 1]
 
         if data is not None:
             idx_to_use = np.where(freqs > 0)[0]
@@ -180,16 +182,18 @@ def get_all_pitch_annotations(mtrack):
             print('Data not available for {}.'.format(mtrack))
             continue
 
+    # putting all annotations together
     if len(annot_times) > 0:
         annot_times = np.concatenate(annot_times)
         annot_freqs = np.concatenate(annot_freqs)
 
-        return annot_times, annot_freqs, stem_annot_activity
+        return annot_times, annot_freqs
+
     else:
-        return None, None, None, stem_annot_activity
+        return None, None, None
 
 def create_annotation_target(freq_grid, time_grid, annotation_times, annotation_freqs):
-    """Create the binary annotation target labels
+    """Create the binary annotation target labels with Gaussian blur
     """
     time_bins = grid_to_bins(time_grid, 0.0, time_grid[-1])
     freq_bins = grid_to_bins(freq_grid, 0.0, freq_grid[-1])
@@ -266,8 +270,8 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
     prefix = "{}_multif0".format(mtrack['filename'].split('.')[0])
 
-    input_path = os.path.join(save_dir, 'inputs_dph', "{}_input_dph.npy".format(prefix))
-    output_path = os.path.join(save_dir, 'outputs_dph', "{}_output_dph.npy".format(prefix))
+    input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
+    output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
 
     if os.path.exists(input_path) and os.path.exists(output_path):
         print("    > already done!")
@@ -282,7 +286,7 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
         (times, freqs, stem_annot_activity) = get_all_pitch_annotations(
             mtrack)
     else:
-        print("{} does not exist".format(mtrack))
+        print("{} audio file does NOT exist".format(mtrack))
         return
 
     if times is not None:
@@ -297,7 +301,8 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
 def compute_features_mtrack(mtrack, save_dir, wavmixes_path, idx):
 
-    print(mtrack['filename'])
+    print("Processing {}...".format(mtrack['filename']))
+
     compute_multif0_complete(mtrack, save_dir, wavmixes_path)
 
 
@@ -577,9 +582,13 @@ def create_data_split(mtrack_dict, output_path):
     ]
     Ntracks = len(all_tracks)
 
-    train_perc = 0.8
+
+    train_perc = 0.75
     validation_perc = 0.1
     test_perc = 1 - train_perc - validation_perc
+
+    # consider doing the training taking into account the songs
+    # maybe leaving one song out for evaluation
 
     mtracks_randomized = np.random.permutation(all_tracks)
 
