@@ -100,7 +100,7 @@ dataset['ECS']['DG_combos'] = combos
 ''' Die Himmel
 '''
 
-ecs_dh = ['DH1_take2', 'DH2_take2']
+ecs_dh = ['DH1_take2', 'DH2_take1']
 
 singers_ecs_dh = [
     'S1-1', 'S2-1', 'S3-2', 'S4-2', 'S5-2',
