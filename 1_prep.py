@@ -29,7 +29,7 @@ def main(args):
     metad = utils.load_json_data(args.metadata_file)
 
     # generate data splits and keep them fixed for the whole project
-    # MAKE SURE THIS IS ONLY CALLED ONCE
+    # MAKE SURE THIS IS ONLY CALLED ONCE -- it is stored with the features and targets
     splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
     utils.create_data_split(metad, splits_path)
 

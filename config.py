@@ -11,7 +11,7 @@ import pandas as pd
 '''Paths
 '''
 audio_save_folder = '/scratch/hc2945/data/audiomixtures/'
-data_save_folder = '/scratch/hc2945/data/mf0annotations/'
+data_save_folder = '/scratch/hc2945/data/features_targets/'
 
 
 # audio folders

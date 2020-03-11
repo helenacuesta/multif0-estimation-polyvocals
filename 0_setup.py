@@ -106,6 +106,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 combine_audio_files(params)
 
             if compute_metadata:
+                print("Annotations for {}".format(song))
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
                 annotation_files = [
                     '{}_soprano_{}.jams'.format(song, combo[0]), '{}_alto_{}.jams'.format(song, combo[1]),
@@ -152,6 +153,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 combine_audio_files(params)
 
             if compute_metadata:
+                print("Annotations for {}".format(song))
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
                 annotation_files = [
                     '{}_S{}.jams'.format(song, combo[0]), '{}_A{}.jams'.format(song, combo[1]),
@@ -196,6 +198,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 combine_audio_files(params)
 
             if compute_metadata:
+                print("Annotations for {}".format(song))
                 # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
                 annotation_files = [
                     '{}_{}.jams'.format(song, dataset['ECS']['DH_singers'][combo[0]-1]),
@@ -239,6 +242,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                     combine_audio_files(params)
 
                 if compute_metadata:
+                    print("Annotations for {}".format(song))
                     # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
                     annotation_files = [
                         "{}_S{}.jams".format(song, combo[0]),
@@ -285,6 +289,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             combine_audio_files(params)
 
         if compute_metadata:
+            print("Annotations for {}".format(song))
             annotation_files = [
                 "{}_{}.jams".format(song, dataset['DCS']['FC_singers'][0]),
                 "{}_{}.jams".format(song, dataset['DCS']['FC_singers'][1]),
@@ -326,6 +331,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             combine_audio_files(params)
 
         if compute_metadata:
+            print("Annotations for {}".format(song))
             annotation_files = [
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][0]),
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][1]),
@@ -367,6 +373,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             combine_audio_files(params)
 
         if compute_metadata:
+            print("Annotations for {}".format(song))
             annotation_files = [
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][0]),
                 "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][1]),
@@ -409,6 +416,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 combine_audio_files(params)
 
             if compute_metadata:
+                print("Annotations for {}".format(song))
                 annotation_files = [
                     "{}_part{}_s_1ch_pyin.jams".format(song, parts),
                     "{}_part{}_a_1ch_pyin.jams".format(song, parts),
@@ -451,6 +459,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 combine_audio_files(params)
 
             if compute_metadata:
+                print("Annotations for {}".format(song))
                 annotation_files = [
                     "{}_part{}_s_1ch_pyin.jams".format(song, parts),
                     "{}_part{}_a_1ch_pyin.jams".format(song, parts),
@@ -479,6 +488,8 @@ def main():
 
     # load the dataset info
     dataset = config.dataset
+
+    print("Dataset info loaded.")
 
     # use the dataset information to create audio mixtures and annotations
     create_full_dataset_mixes(dataset, config.audio_save_folder, reverb=True, exclude_dataset=None,
