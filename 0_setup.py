@@ -375,10 +375,10 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         if compute_metadata:
             print("Annotations for {}".format(song))
             annotation_files = [
-                "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][0]),
-                "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][1]),
-                "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][2]),
-                "{}_{}.jams".format(song, dataset['DCS']['QA_singers'][3])
+                "{}_{}.jams".format(song, dataset['DCS']['QB_singers'][0]),
+                "{}_{}.jams".format(song, dataset['DCS']['QB_singers'][1]),
+                "{}_{}.jams".format(song, dataset['DCS']['QB_singers'][2]),
+                "{}_{}.jams".format(song, dataset['DCS']['QB_singers'][3])
             ]
 
             mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files, params['annot_folder'])
