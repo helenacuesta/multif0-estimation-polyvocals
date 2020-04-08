@@ -472,6 +472,8 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
             "{}_part{}_b_1ch.wav".format(song, parts)
         ]
 
+        print(song, params['filenames'])
+
         params['output_fname'] = "{}_{}_satb.wav".format(song, parts)
 
         if compute_audio_mix and os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
