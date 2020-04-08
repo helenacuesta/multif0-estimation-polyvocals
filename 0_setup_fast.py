@@ -223,54 +223,54 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                 '''
         print('{} quartets mixed and exported'.format(song))
 
-        # Seele Christi
+    # Seele Christi
 
-        for song in dataset['ECS']['SC_songs']:
-            for combo in dataset['ECS']['SC_combos']:
+    for song in dataset['ECS']['SC_songs']:
+        for combo in dataset['ECS']['SC_combos']:
 
-                params = {}
-                params['audio_folder'] = config.ecs_folder
-                params['annot_folder'] = config.ecs_folder
-                params['sr'] = 22050
-                params['reverb'] = True
+            params = {}
+            params['audio_folder'] = config.ecs_folder
+            params['annot_folder'] = config.ecs_folder
+            params['sr'] = 22050
+            params['reverb'] = True
 
-                params['filenames'] = [
-                    "{}_S{}.wav".format(song, combo[0]),
-                    "{}_A{}.wav".format(song, combo[1]),
-                    "{}_T{}.wav".format(song, combo[2]),
-                    "{}_B{}.wav".format(song, combo[3])
+            params['filenames'] = [
+                "{}_S{}.wav".format(song, combo[0]),
+                "{}_A{}.wav".format(song, combo[1]),
+                "{}_T{}.wav".format(song, combo[2]),
+                "{}_B{}.wav".format(song, combo[3])
+            ]
+
+            params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+            '''
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                # create audio mixture and its reverb version if indicated
+                combine_audio_files(params)
+            
+            '''
+
+            if compute_metadata:
+                print("Annotations for {}".format(song))
+                # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
+                annotation_files = [
+                    "{}_S{}.jams".format(song, combo[0]),
+                    "{}_A{}.jams".format(song, combo[1]),
+                    "{}_T{}.jams".format(song, combo[2]),
+                    "{}_B{}.jams".format(song, combo[3])
                 ]
 
-                params['output_fname'] = '{}_{}_{}_{}_{}.wav'.format(song, combo[0], combo[1], combo[2], combo[3])
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
+                                            params['annot_folder'])
                 '''
-                if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
-                    # create audio mixture and its reverb version if indicated
-                    combine_audio_files(params)
-                
+                if reverb:
+                    idx = -1
+                    for annot in annotation_files:
+                        idx += 1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                params['filenames'][idx])
                 '''
 
-                if compute_metadata:
-                    print("Annotations for {}".format(song))
-                    # create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
-                    annotation_files = [
-                        "{}_S{}.jams".format(song, combo[0]),
-                        "{}_A{}.jams".format(song, combo[1]),
-                        "{}_T{}.jams".format(song, combo[2]),
-                        "{}_B{}.jams".format(song, combo[3])
-                    ]
-
-                    mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
-                                                params['annot_folder'])
-                    '''
-                    if reverb:
-                        idx = -1
-                        for annot in annotation_files:
-                            idx += 1
-                            utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
-                                                    params['filenames'][idx])
-                    '''
-
-            print('{} quartets mixed and exported'.format(song))
+        print('{} quartets mixed and exported'.format(song))
 
     # ------------ Process Dagstuhl ChoirSet ------------ #
 
