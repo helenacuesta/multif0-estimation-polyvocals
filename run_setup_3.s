@@ -3,7 +3,7 @@
 #SBATCH --job-name=setup_v2
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=120:00:00
+#SBATCH --time=144:00:00
 #SBATCH --output=setup3.out
 #SBATCH --error=setup3.err
 
