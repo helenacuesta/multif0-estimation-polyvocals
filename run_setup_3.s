@@ -12,5 +12,6 @@ module purge
 
 module load rubberband/intel/1.8.1
 module load ffmpeg/intel/3.2.2
+module load sox/intel/14.4.2
 
-python 0_setup.py
+python 0_setup_fast.py
