@@ -414,42 +414,44 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         song_idx += 1
         parts = dataset['BSQ']['num_parts'][song_idx]
 
-        params = {}
-        params['audio_folder'] = config.bsq_folder_audio
-        params['annot_folder'] = config.bsq_folder_annot
-        params['sr'] = 44100
-        params['reverb'] = True
+        for part in range(1, parts+1):
 
-        params['filenames'] = [
-            "{}_part{}_s_1ch.wav".format(song, parts),
-            "{}_part{}_a_1ch.wav".format(song, parts),
-            "{}_part{}_t_1ch.wav".format(song, parts),
-            "{}_part{}_b_1ch.wav".format(song, parts)
-        ]
+            params = {}
+            params['audio_folder'] = config.bsq_folder_audio
+            params['annot_folder'] = config.bsq_folder_annot
+            params['sr'] = 44100
+            params['reverb'] = True
 
-        params['output_fname'] = "{}_{}_satb.wav".format(song, parts)
-
-        if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
-            combine_audio_files(params)
-
-        if compute_metadata:
-            print("Annotations for {}".format(song))
-            annotation_files = [
-                "{}_part{}_s_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_a_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_t_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_b_1ch_pyin.jams".format(song, parts)
+            params['filenames'] = [
+                "{}_part{}_s_1ch.wav".format(song, part),
+                "{}_part{}_a_1ch.wav".format(song, part),
+                "{}_part{}_t_1ch.wav".format(song, part),
+                "{}_part{}_b_1ch.wav".format(song, part)
             ]
 
-            mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
-                                        params['annot_folder'])
+            params['output_fname'] = "{}_{}_satb.wav".format(song, part)
 
-            if reverb:
-                idx = -1
-                for annot in annotation_files:
-                    idx += 1
-                    utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
-                                            params['filenames'][idx])
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                combine_audio_files(params)
+
+            if compute_metadata:
+                print("Annotations for {}".format(song))
+                annotation_files = [
+                    "{}_part{}_s_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_a_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_t_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_b_1ch_pyin.jams".format(song, part)
+                ]
+
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
+                                            params['annot_folder'])
+
+                if reverb:
+                    idx = -1
+                    for annot in annotation_files:
+                        idx += 1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                params['filenames'][idx])
 
         print('{} quartets mixed and exported'.format(song))
 
@@ -459,44 +461,46 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         song_idx += 1
         parts = dataset['BC']['num_parts'][song_idx]
 
-        params = {}
-        params['audio_folder'] = config.bc_folder_audio
-        params['annot_folder'] = config.bc_folder_annot
-        params['sr'] = 44100
-        params['reverb'] = True
+        for part in range(1, parts+1):
 
-        params['filenames'] = [
-            "{}_part{}_s_1ch.wav".format(song, parts),
-            "{}_part{}_a_1ch.wav".format(song, parts),
-            "{}_part{}_t_1ch.wav".format(song, parts),
-            "{}_part{}_b_1ch.wav".format(song, parts)
-        ]
+            params = {}
+            params['audio_folder'] = config.bc_folder_audio
+            params['annot_folder'] = config.bc_folder_annot
+            params['sr'] = 44100
+            params['reverb'] = True
 
-        print(song, params['filenames'])
-
-        params['output_fname'] = "{}_{}_satb.wav".format(song, parts)
-
-        if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
-            combine_audio_files(params)
-
-        if compute_metadata:
-            print("Annotations for {}".format(song))
-            annotation_files = [
-                "{}_part{}_s_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_a_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_t_1ch_pyin.jams".format(song, parts),
-                "{}_part{}_b_1ch_pyin.jams".format(song, parts)
+            params['filenames'] = [
+                "{}_part{}_s_1ch.wav".format(song, part),
+                "{}_part{}_a_1ch.wav".format(song, part),
+                "{}_part{}_t_1ch.wav".format(song, part),
+                "{}_part{}_b_1ch.wav".format(song, part)
             ]
 
-            mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
-                                        params['annot_folder'])
+            print(song, params['filenames'])
 
-            if reverb:
-                idx = -1
-                for annot in annotation_files:
-                    idx += 1
-                    utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
-                                            params['filenames'][idx])
+            params['output_fname'] = "{}_{}_satb.wav".format(song, part)
+
+            if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
+                combine_audio_files(params)
+
+            if compute_metadata:
+                print("Annotations for {}".format(song))
+                annotation_files = [
+                    "{}_part{}_s_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_a_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_t_1ch_pyin.jams".format(song, part),
+                    "{}_part{}_b_1ch_pyin.jams".format(song, part)
+                ]
+
+                mtracks = create_dict_entry(mtracks, mixes_wavpath, params['output_fname'], annotation_files,
+                                            params['annot_folder'])
+
+                if reverb:
+                    idx = -1
+                    for annot in annotation_files:
+                        idx += 1
+                        utils.shift_annotations(params['annot_folder'], annot, params['audio_folder'],
+                                                params['filenames'][idx])
 
     print('{} quartets mixed and exported'.format(song))
 
