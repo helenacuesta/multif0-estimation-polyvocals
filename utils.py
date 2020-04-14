@@ -130,21 +130,21 @@ def grid_to_bins(grid, start_bin_val, end_bin_val):
 
 def save_data(save_path, prefix, X, Y, f, t):
 
-    input_path = os.path.join(save_path, 'inputs_dph')
-    output_path = os.path.join(save_path, 'outputs_dph')
+    input_path = os.path.join(save_path, 'inputs')
+    output_path = os.path.join(save_path, 'outputs')
 
     if not os.path.exists(input_path):
         os.mkdir(input_path)
     if not os.path.exists(output_path):
         os.mkdir(output_path)
 
-    if not os.path.exists(os.path.join(input_path, "{}_input_dph.npy".format(prefix))):
-        np.save(os.path.join(input_path, "{}_input_dph.npy".format(prefix)), X, allow_pickle=True)
-        np.save(os.path.join(output_path, "{}_output_dph.npy".format(prefix)), Y, allow_pickle=True)
+    if not os.path.exists(os.path.join(input_path, "{}_input.npy".format(prefix))):
+        np.save(os.path.join(input_path, "{}_input.npy".format(prefix)), X, allow_pickle=True)
+        np.save(os.path.join(output_path, "{}_output.npy".format(prefix)), Y, allow_pickle=True)
         print("    Saved inputs and targets targets for {} to {}".format(prefix, save_path))
 
     else:
-        np.save(os.path.join(output_path, "{}_output_dph.npy".format(prefix)), Y, allow_pickle=True)
+        np.save(os.path.join(output_path, "{}_output.npy".format(prefix)), Y, allow_pickle=True)
         print("    Saved only targets for {} to {}".format(prefix, save_path))
 
 def get_all_pitch_annotations(mtrack):
@@ -153,23 +153,25 @@ def get_all_pitch_annotations(mtrack):
 
     annot_times = []
     annot_freqs = []
-    #stem_annot_activity = {}
+
     for stem in mtrack['annot_files']:
 
-        '''Load annotations for each stem
+        '''Load annotations for each singer in the mixture
         '''
         d = jams.load(os.path.join(mtrack['annot_folder'], stem))
         data = np.array(d.annotations[0].data)[:, [0, 2]]
 
-        '''
+
         times = data[:, 0]
         freqs = []
         for d in data[:, 1]:
             freqs.append(d['frequency'])
         freqs = np.array(freqs)
+
         '''
         times = data[:, 0]
         freqs = data[:, 1]
+        '''
 
         if data is not None:
             idx_to_use = np.where(freqs > 0)[0]
@@ -190,7 +192,7 @@ def get_all_pitch_annotations(mtrack):
         return annot_times, annot_freqs
 
     else:
-        return None, None, None
+        return None, None
 
 def create_annotation_target(freq_grid, time_grid, annotation_times, annotation_freqs):
     """Create the binary annotation target labels with Gaussian blur
@@ -268,7 +270,7 @@ def get_input_output_pairs_pump(audio_fpath, annot_times, annot_freqs):
 
 def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
-    prefix = "{}_multif0".format(mtrack['filename'].split('.')[0])
+    prefix = "{}".format(mtrack['filename'].split('.')[0])
 
     input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
     output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
@@ -283,7 +285,7 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
     if os.path.exists(multif0_mix_path):
 
-        (times, freqs, stem_annot_activity) = get_all_pitch_annotations(
+        times, freqs = get_all_pitch_annotations(
             mtrack)
     else:
         print("{} audio file does NOT exist".format(mtrack))
