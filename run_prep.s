@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 #SBATCH --job-name=prep
-#SBATCH --njobs=4
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=50:00:00
+#SBATCH --mem=16GB
 #SBATCH --output=prep.out
 #SBATCH --error=prep.err
 
