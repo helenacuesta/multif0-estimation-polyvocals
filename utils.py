@@ -280,7 +280,7 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
         return
 
     multif0_mix_path = os.path.join(
-        wavmixes_path, mtrack['filename']
+        mtrack['audiopath'], mtrack['filename']
     )
 
     if os.path.exists(multif0_mix_path):
