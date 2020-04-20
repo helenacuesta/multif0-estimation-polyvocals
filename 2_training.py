@@ -2,6 +2,8 @@ import os
 import json
 
 import keras
+import numpy as np
+import csv
 
 import config
 import utils
@@ -36,8 +38,7 @@ class Data(object):
         self.muxrate = muxrate
 
     def load_data_splits(self):
-        """Get randomized artist-conditional splits
-        """
+
         with open(self.data_splits_path, 'r') as fhandle:
             data_splits = json.load(fhandle)
 
@@ -86,10 +87,11 @@ def create_data_splits(path_to_metadata_file, exper_dir):
 
 def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
 
-    data_path = utils.data_path_multif0()
+    #data_path = utils.data_path_multif0()
+    data_path = config.data_save_folder
 
     input_patch_size = (360, 50)
-    data_splits_path = os.path.join(exper_dir, 'data_splits.json')
+    data_splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
 
     ## DATA MESS SETUP
 
@@ -97,8 +99,6 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
         data_splits_path, data_path, input_patch_size,
         batch_size, active_str, muxrate
     )
-
-    print(dat.load_data_splits()[0])
 
     # instantiate train and validation generators
 
@@ -112,7 +112,7 @@ def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
 
     print(model.summary(line_length=80))
 
-    ## HOPEFULLY FIT MODEL
+    # hopefully fit model
 
     history = model.fit_generator(
         train_generator, config.SAMPLES_PER_EPOCH, epochs=config.NB_EPOCHS, verbose=1,
@@ -157,28 +157,29 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
     This should be common code for all experiments
     """
 
-    exper_dir = utils.experiment_output_path()
+    exper_dir = config.exper_output()
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
      ) = utils.get_paths(exper_dir, save_key)
 
 
-    model_save_path_rt = './models'
-    if not os.path.exists(model_save_path_rt):
-        os.mkdir(model_save_path_rt)
+    model_save_path = './models'
+    if not os.path.exists(model_save_path):
+        os.mkdir(model_save_path)
 
-    model_save_path = os.path.join(model_save_path_rt, "{}.pkl".format(save_key))
+    model_save_path = os.path.join(model_save_path, "{}.pkl".format(save_key))
 
-
+    '''
     # create data splits file if it doesnt exist
     if not os.path.exists(
         os.path.join(exper_dir, 'data_splits.json')):
         create_data_splits(path_to_metadata_file='./mtracks_info.json', exper_dir=exper_dir)
-
+    '''
 
     model, history, dat = train(model, model_save_path, exper_dir,
                                 batch_size, active_str, muxrate)
+
 
     run_evaluation(exper_dir, save_key, history, dat, model)
     print("Done! Results saved to {}".format(save_path))
@@ -193,15 +194,64 @@ def main(args):
 
     save_key = args.save_key
 
-    if args.model_name == 'model5':
-        model = models.build_model5()
-    elif args.model_name == 'model6':
-        model = models.build_model6()
-    elif args.model_name == 'model7':
-        model = models.build_model7()
+    if args.model_name == 'model1':
+        model = models.build_model1()
+    elif args.model_name == 'model2':
+        model = models.build_model2()
+    elif args.model_name == 'model3':
+        model = models.build_model3()
     else:
-        print("Specified model does not exist. Please choose an valid model: model5, model6 or model7.")
+        print("Specified model does not exist. Please choose an valid model: model1, model2 or model3.")
         return
+
+    print("Computing multi-f0 ground truth for training files...")
+    data_splits = utils.load_json_data(
+        os.path.join(config.data_save_folder, 'data_splits.json'))
+
+    for fn in data_splits['train']:
+
+        targ = np.load(os.path.join(config.data_save_folder, 'outputs', fn.replace('.wav', '_output.npy')))
+        ts, fs = utils.pitch_activations_to_mf0(targ, 0.9)
+        output_mf0 = os.path.join(
+            utils.test_path(), fn.replace('.wav', '.csv')
+        )
+        with open(output_mf0, 'w') as f:
+            writer = csv.writer(f)
+            for i in range(len(ts)):
+                writer.writerow(np.array([ts[i], fs[i]]))
+
+    print("Computing multi-f0 ground truth for validation files...")
+    data_splits = utils.load_json_data(
+        os.path.join(config.data_save_folder, 'data_splits.json'))
+
+    for fn in data_splits['validate']:
+
+        targ = np.load(os.path.join(config.data_save_folder, 'outputs', fn.replace('.wav', '_output.npy')))
+        ts, fs = utils.pitch_activations_to_mf0(targ, 0.9)
+        output_mf0 = os.path.join(
+            utils.test_path(), fn.replace('.wav', '.csv')
+        )
+        with open(output_mf0, 'w') as f:
+            writer = csv.writer(f)
+            for i in range(len(ts)):
+                writer.writerow(np.array([ts[i], fs[i]]))
+
+
+    print("Computing multi-f0 ground truth for training files...")
+    data_splits = utils.load_json_data(
+        os.path.join(config.data_save_folder, 'data_splits.json'))
+
+    for fn in data_splits['test']:
+
+        targ = np.load(os.path.join(config.data_save_folder, 'outputs', fn.replace('.wav', '_output.npy')))
+        ts, fs = utils.pitch_activations_to_mf0(targ, 0.9)
+        output_mf0 = os.path.join(
+            utils.test_path(), fn.replace('.wav', '.csv')
+        )
+        with open(output_mf0, 'w') as f:
+            writer = csv.writer(f)
+            for i in range(len(ts)):
+                writer.writerow(np.array([ts[i], fs[i]]))
 
 
     experiment(save_key, model, batch_size, active_str, muxrate)

@@ -321,18 +321,18 @@ def patch_size():
 
 
 def experiment_output_path():
-    return "/scratch/hc2945/multif0/experiment_output"
+    return "/scratch/hc2945/data/experiment_output"
 
 
 def data_path_multif0():
     """Data path for complete mulif0 data
     """
-    return "/scratch/hc2945/multif0/AudioMixtures"
+    return "/scratch/hc2945/data/audiomixtures"
 
 def track_id_list():
-    """List of tracks of the three datasets
+    """List of tracks of the datasets
     """
-    metadata_path = '/scratch/hc2945/multif0/VocalEnsembles/mtracks_info.json'
+    metadata_path = '/scratch/hc2945/data/audiomixtures/mtracks_info.json'
 
     data = load_json_data(metadata_path)
 
@@ -526,12 +526,12 @@ def get_file_paths(mtrack_list, data_path):
     file_paths = []
     for track_id in mtrack_list:
         input_path = glob.glob(
-            os.path.join(data_path, 'inputs_dph', "{}*_input_dph.npy".format(track_id[:-4]))
+            os.path.join(data_path, 'inputs', "{}*_input.npy".format(track_id[:-4]))
         )
 
         output_path = glob.glob(
             os.path.join(
-                data_path, 'outputs_dph', "{}*_output_dph.npy".format(track_id[:-4])
+                data_path, 'outputs', "{}*_output.npy".format(track_id[:-4])
             )
         )
 
@@ -719,7 +719,7 @@ def load_broken_mf0(annotpath):
 def test_path():
     """top level path for test data
     """
-    return '/scratch/hc2945/multif0/VocalEnsembles/test_data'
+    return '/scratch/hc2945/data/test_data'
 
 def get_best_thresh(dat, model):
     """Use validation set to get the best threshold value
@@ -733,10 +733,7 @@ def get_best_thresh(dat, model):
     thresh_scores = {t: [] for t in thresh_vals}
     for npy_file, _ in validation_files:
 
-        fname_base = os.path.basename(npy_file).replace('_input_dph.npy', '.csv')
-
-        if 'rev_' in fname_base:
-            fname_base = fname_base[4:]
+        fname_base = os.path.basename(npy_file).replace('_input.npy', '.csv')
 
         label_file = os.path.join(
                 test_set_path, fname_base)
@@ -795,13 +792,10 @@ def score_on_test_set(model, save_path, dat, thresh=0.5):
         npy_file = npy_file[0]
         print(npy_file)
         # get input npy file and ground truth label pair
-        fname_base_gt = os.path.basename(npy_file).replace('_input_dph.npy', '.csv')
-        fname_base_gt = 'rev_' + fname_base_gt
-        print(fname_base_gt)
-        fname_base = fname_base_gt[:-4]
+        fname_base = os.path.basename(npy_file).replace('_input.npy', '.csv')
         print(fname_base)
         label_file = os.path.join(
-                test_set_path, fname_base_gt)
+                test_set_path, fname_base)
 
         print(label_file)
 
@@ -834,8 +828,10 @@ def score_on_test_set(model, save_path, dat, thresh=0.5):
         )
 
         # load ground truth labels
-        #ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
-        ref_times, ref_freqs = load_broken_mf0(label_file)
+        try:
+            ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        except:
+            ref_times, ref_freqs = load_broken_mf0(label_file)
 
         # get multif0 metrics and append
         scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs)

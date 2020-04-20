@@ -12,6 +12,7 @@ import pandas as pd
 '''
 audio_save_folder = '/scratch/hc2945/data/audiomixtures/'
 data_save_folder = '/scratch/hc2945/data/features_targets/'
+exper_output = '/scratch/hc2945/data/experiment_output/'
 
 
 # audio folders

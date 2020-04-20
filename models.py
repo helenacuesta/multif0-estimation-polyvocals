@@ -9,7 +9,7 @@ from keras.layers.normalization import BatchNormalization
 from keras import backend as K
 
 
-def build_model5():
+def build_model1():
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
@@ -69,7 +69,7 @@ def build_model5():
 
     return model
 
-def build_model6():
+def build_model2():
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
@@ -122,7 +122,7 @@ def build_model6():
 
     return model
 
-def build_model5_pf():
+def build_model1_pf():
 
     input_shape = (None, None, 5) # HCQT input shape
 
@@ -173,7 +173,7 @@ def build_model5_pf():
 
     return model
 
-def build_model6_pf():
+def build_model2_pf():
 
     input_shape = (None, None, 5)  # HCQT input shape
 
@@ -224,7 +224,7 @@ def base_model(input, let):
     y1a = BatchNormalization()(y1)
 
     # conv2
-    y2 = Conv2D(16, (5, 5), padding='same', activation='relu', name='conv2{}'.format(let))(y1a)
+    y2 = Conv2D(32, (5, 5), padding='same', activation='relu', name='conv2{}'.format(let))(y1a)
     y2a = BatchNormalization()(y2)
 
     # conv3
@@ -246,7 +246,7 @@ def base_model(input, let):
     return y6a, input
 
 
-def build_model7():
+def build_model3():
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
