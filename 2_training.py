@@ -203,7 +203,7 @@ def main(args):
     else:
         print("Specified model does not exist. Please choose an valid model: model1, model2 or model3.")
         return
-
+    '''
     print("Computing multi-f0 ground truth for training files...")
     data_splits = utils.load_json_data(
         os.path.join(config.data_save_folder, 'data_splits.json'))
@@ -253,7 +253,7 @@ def main(args):
             for i in range(len(ts)):
                 writer.writerow(np.array([ts[i], fs[i]]))
 
-
+    '''
     experiment(save_key, model, batch_size, active_str, muxrate)
 
 
