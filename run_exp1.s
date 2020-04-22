@@ -10,8 +10,8 @@
 
 module purge
 
-module load cuda/10.1.105
 module load cudnn/7.0v4.0
+module load cuda/10.1.105
 
 
 python 2_training.py --model model1 --save_key exp1multif0
