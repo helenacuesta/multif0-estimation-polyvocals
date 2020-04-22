@@ -15,3 +15,4 @@ module load cuda/10.1.105
 
 
 python 2_training.py --model model1 --save_key exp1multif0
+
