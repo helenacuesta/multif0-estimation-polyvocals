@@ -157,7 +157,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
     This should be common code for all experiments
     """
 
-    exper_dir = config.exper_output()
+    exper_dir = config.exper_output
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
