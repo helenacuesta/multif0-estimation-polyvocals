@@ -18,10 +18,13 @@ def main():
         output_mf0 = os.path.join(
             utils.test_path(), fn.replace('.wav', '.csv')
         )
-        with open(output_mf0, 'w') as f:
-            writer = csv.writer(f)
-            for i in range(len(ts)):
-                writer.writerow(np.array([ts[i], fs[i]]))
+
+        with open(output_mf0, 'w') as fhandle:
+            csv_writer = csv.writer(fhandle, delimiter='\t')
+            for t, f in zip(ts, fs):
+                row = [t]
+                row.extend(f)
+                csv_writer.writerow(row)
 
     print("Computing multi-f0 ground truth for validation files...")
     data_splits = utils.load_json_data(
@@ -34,10 +37,12 @@ def main():
         output_mf0 = os.path.join(
             utils.test_path(), fn.replace('.wav', '.csv')
         )
-        with open(output_mf0, 'w') as f:
-            writer = csv.writer(f)
-            for i in range(len(ts)):
-                writer.writerow(np.array([ts[i], fs[i]]))
+        with open(output_mf0, 'w') as fhandle:
+            csv_writer = csv.writer(fhandle, delimiter='\t')
+            for t, f in zip(ts, fs):
+                row = [t]
+                row.extend(f)
+                csv_writer.writerow(row)
 
     print("Computing multi-f0 ground truth for training files...")
     data_splits = utils.load_json_data(
@@ -50,10 +55,12 @@ def main():
         output_mf0 = os.path.join(
             utils.test_path(), fn.replace('.wav', '.csv')
         )
-        with open(output_mf0, 'w') as f:
-            writer = csv.writer(f)
-            for i in range(len(ts)):
-                writer.writerow(np.array([ts[i], fs[i]]))
+        with open(output_mf0, 'w') as fhandle:
+            csv_writer = csv.writer(fhandle, delimiter='\t')
+            for t, f in zip(ts, fs):
+                row = [t]
+                row.extend(f)
+                csv_writer.writerow(row)
 
 
 main()

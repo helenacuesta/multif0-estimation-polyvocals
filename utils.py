@@ -393,6 +393,32 @@ def keras_generator(data_list, input_patch_size, batch_size=16, active_str=200, 
         print(len(batch['X1']))
         yield [batch['X1'], batch['X2']], batch['Y']
 
+def iterate_files(inputs, batchsize, shuffle=True):
+
+    if shuffle:
+        indices = np.arange(len(inputs))
+        np.random.shuffle(indices)
+    for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
+        if shuffle:
+            excerpt = indices[start_idx:start_idx + batchsize]
+        else:
+            excerpt = slice(start_idx, start_idx + batchsize)
+        yield inputs[excerpt]
+
+
+def data_generator(data_list, input_patch_size, files_batch, batch_size):
+    """Alternative generator, to be tested
+    """
+    for files in iterate_files(data_list, files_batch):
+        for fpath_in, fpath_out in files:
+            batch_gen = patch_generator(fpath_in, fpath_out, input_patch_size=input_patch_size)
+            for batch in batch_gen:
+                print(len(batch['X1']))
+                yield [batch['X1'], batch['X2']], batch['Y']
+
+
+
+
 def keras_generator_single(data_list, input_patch_size, batch_size=16, active_str=200, muxrate=20):
     """Generator to be passed to a keras model. Specifically for single HCQT input, no phase
     """
