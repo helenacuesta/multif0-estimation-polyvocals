@@ -771,9 +771,8 @@ def get_best_thresh(dat, model):
             get_single_test_prediction(model=model, npy_file=npy_file)
 
         # load ground truth labels
-        #ref_times, ref_freqs = \
-        #    mir_eval.io.load_ragged_time_series(label_file)
-        ref_times, ref_freqs = load_broken_mf0(label_file)
+        ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        #ref_times, ref_freqs = load_broken_mf0(label_file)
 
         for thresh in thresh_vals:
             # get multif0 output from prediction
