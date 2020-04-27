@@ -150,7 +150,7 @@ def run_evaluation(exper_dir, save_key, dat, model):
 
 
     print("scoring multif0 metrics on test sets...")
-    utils.score_on_test_set(model, save_path, thresh)
+    utils.score_on_test_set(model, save_path, dat, thresh)
 
 
 def experiment(save_key, model, batch_size, active_str, muxrate):
