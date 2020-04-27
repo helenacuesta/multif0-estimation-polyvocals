@@ -483,7 +483,7 @@ def patch_generator(fpath_in, fpath_out, input_patch_size):
 
         for t in t_vals:
             f = 0
-            t = np.random.randint(0, n_times - n_t)
+            #t = np.random.randint(0, n_times - n_t)
 
             x1, x2 = grab_patch_input(
                 f, t, n_f, n_t, data_in_1, data_in_2
