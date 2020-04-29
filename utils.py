@@ -386,14 +386,12 @@ def keras_generator(data_list, input_patch_size, batch_size=16, active_str=200, 
             )
         )
 
-    print("Length of list of streamers is {}".format(len(streams)))
-
-    stream_mux = pescador.StochasticMux(streams, active_str, rate=muxrate, random_state=RANDOM_STATE)
+    stream_mux = pescador.StochasticMux(streams, active_str, rate=muxrate, mode='with_replacement', random_state=RANDOM_STATE)
 
     batch_generator = pescador.buffer_stream(stream_mux, batch_size)
 
     for batch in batch_generator:
-        print("Batch length: ".format(len(batch['X1'])))
+        print("\n Batch length: ".format(len(batch['X1'])))
         yield [batch['X1'], batch['X2']], batch['Y']
 
 def iterate_files(inputs, batchsize, shuffle=True):
