@@ -189,8 +189,8 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
 def main(args):
 
     batch_size = 16
-    active_str = 200
-    muxrate = 30
+    active_str = 100
+    muxrate = 32
 
     save_key = args.save_key
 

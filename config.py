@@ -313,6 +313,6 @@ for song in bc[:, 0]:
 
 '''Training parameters
 '''
-SAMPLES_PER_EPOCH = 2048
+SAMPLES_PER_EPOCH = 3072
 NB_EPOCHS = 100
-NB_VAL_SAMPLES = 128
+NB_VAL_SAMPLES = 256
