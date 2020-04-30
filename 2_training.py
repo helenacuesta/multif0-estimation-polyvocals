@@ -164,7 +164,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
      ) = utils.get_paths(exper_dir, save_key)
 
 
-    model_save_path = './models'
+    model_save_path = '/scratch/hc2945/data/models/'
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
 
