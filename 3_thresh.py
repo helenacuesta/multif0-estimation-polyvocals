@@ -143,14 +143,15 @@ def run_evaluation(exper_dir, save_key, dat, model):
     ## Evaluate
     print("getting model metrics...")
     utils.get_model_metrics(dat, model, model_scores_path)
+    '''
     
 
     print("getting best threshold...")
     thresh = utils.get_best_thresh(dat, model)
-    '''
+
 
     print("scoring multif0 metrics on test sets...")
-    utils.score_on_test_set(model, save_path, dat, 0.4)
+    utils.score_on_test_set(model, save_path, dat, thresh)
 
 
 def experiment(save_key, model, batch_size, active_str, muxrate):
