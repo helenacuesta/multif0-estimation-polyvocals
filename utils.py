@@ -3,12 +3,12 @@ import glob
 
 import json
 import csv
+import ast
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
-import ast
 
 import pumpp
 import jams
@@ -17,6 +17,7 @@ import pescador
 import mir_eval
 import muda
 
+
 import keras.backend as K
 from scipy.ndimage import filters
 
@@ -24,10 +25,14 @@ from scipy.ndimage import filters
 '''General util functions
 '''
 
-''' Setup and data preparation util functions
-'''
 
 def shift_annotations(jams_path, jams_fname, audio_path, audio_fname):
+
+    '''
+    Use the IRConvolution deformer to shift F0 annotations according to
+    the estimated group delay introduced by impulse response
+    '''
+
     ir_muda = muda.deformers.IRConvolution(ir_files='./ir/IR_greathall.wav', n_fft=2048, rolloff_value=-24)
 
     # make sure the duration field in the jams file is not null
@@ -49,10 +54,12 @@ def save_json_data(data, save_path):
     with open(save_path, 'w') as fp:
         json.dump(data, fp)
 
+
 def load_json_data(load_path):
     with open(load_path, 'r') as fp:
         data = json.load(fp)
     return data
+
 
 def get_hcqt_params():
 
@@ -63,21 +70,18 @@ def get_hcqt_params():
     sr = 22050
     fmin = 32.7
     hop_length = 256
+
     return bins_per_octave, n_octaves, harmonics, sr, fmin, hop_length, over_sample
 
-import numpy as np
-import pandas as pd
-import mir_eval
-import librosa
 
-import os
+def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=22050.0):
 
-def pyin_to_unvoiced(pyin_path, pyin_fname, audio_path, audio_fname, fs=44100):
     '''This function takes a CSV file with smoothedpitchtrack info from pYIN
     and adds zeros in the unvoiced frames.
     '''
-    print(audio_fname)
+
     x, fs = librosa.core.load(os.path.join(audio_path, audio_fname), sr=fs)
+
     if pyin_fname.endswith('csv'):
         pyi = pd.read_csv(os.path.join(pyin_path, pyin_fname), header=None).values
 
@@ -107,7 +111,7 @@ def get_freq_grid():
     """
     (bins_per_octave, n_octaves, _, _, f_min, _, over_sample) = get_hcqt_params()
     freq_grid = librosa.cqt_frequencies(
-        n_octaves*12*over_sample, f_min, bins_per_octave=bins_per_octave)
+        n_octaves * 12 * over_sample, f_min, bins_per_octave=bins_per_octave)
     return freq_grid
 
 
@@ -127,6 +131,7 @@ def grid_to_bins(grid, start_bin_val, end_bin_val):
     bin_centers = (grid[1:] + grid[:-1])/2.0
     bins = np.concatenate([[start_bin_val], bin_centers, [end_bin_val]])
     return bins
+
 
 def save_data(save_path, prefix, X, Y, f, t):
 

@@ -14,5 +14,5 @@ module load cudnn/7.0v4.0
 module load cuda/10.1.105
 
 
-python 2_training.py --model model3 --save_key exp3multif0
+python 2_training.py --model model3 --save_key exp3multif0 --data_splits_file data_splits.json
 

@@ -85,13 +85,13 @@ def create_data_splits(path_to_metadata_file, exper_dir):
                            os.path.join(exper_dir, 'data_splits.json'))
 
 
-def train(model, model_save_path, exper_dir, batch_size, active_str, muxrate):
+def train(model, model_save_path, data_splits_file, batch_size, active_str, muxrate):
 
     #data_path = utils.data_path_multif0()
     data_path = config.data_save_folder
 
     input_patch_size = (360, 50)
-    data_splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
+    data_splits_path = os.path.join(config.data_save_folder, data_splits_file)
 
     ## DATA MESS SETUP
 
@@ -152,7 +152,7 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
     utils.score_on_test_set(model, save_path, dat, thresh)
 
 
-def experiment(save_key, model, batch_size, active_str, muxrate):
+def experiment(save_key, model, data_splits_file, batch_size, active_str, muxrate):
     """
     This should be common code for all experiments
     """
@@ -177,7 +177,7 @@ def experiment(save_key, model, batch_size, active_str, muxrate):
         create_data_splits(path_to_metadata_file='./mtracks_info.json', exper_dir=exper_dir)
     '''
 
-    model, history, dat = train(model, model_save_path, exper_dir,
+    model, history, dat = train(model, model_save_path, data_splits_file,
                                 batch_size, active_str, muxrate)
 
 
@@ -193,6 +193,7 @@ def main(args):
     muxrate = 32
 
     save_key = args.save_key
+    data_splits_file = args.data_splits_file
 
     if args.model_name == 'model1':
         model = models.build_model1()
@@ -204,7 +205,7 @@ def main(args):
         print("Specified model does not exist. Please choose an valid model: model1, model2 or model3.")
         return
 
-    experiment(save_key, model, batch_size, active_str, muxrate)
+    experiment(save_key, model, data_splits_file, batch_size, active_str, muxrate)
 
 
 
@@ -221,6 +222,11 @@ if __name__ == "__main__":
                         dest='save_key',
                         type=str,
                         help="String to save model-related data.")
+
+    parser.add_argument("--data_splits_file",
+                        dest='data_splits_file',
+                        type=str,
+                        help="Filename of the data splits file to use in the experiment.")
 
 
     main(parser.parse_args())
