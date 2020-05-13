@@ -1,5 +1,6 @@
 import models
 import utils
+import pandas as pd
 from config import *
 
 import os
@@ -20,9 +21,8 @@ def main(args):
     save_path = args.save_path
     list_of_files = args.list_of_files
 
-    audio_path = np.loadtxt(list_of_files)
-    print(audio_path, type(audio_path))
-    #fname_list = np.loadtxt(list_of_files)[1:]
+    audio_path = np.array(pd.read_csv(list_of_files, header=None))[0][0]
+    fname_list = np.array(pd.read_csv(list_of_files, header=None))[1:]
 
 
     save_key = 'exp5multif0'
@@ -41,6 +41,8 @@ def main(args):
     thresh = 0.5
 
     for fname in fname_list:
+
+        fname = fname[0]
 
         if not fname.endswith('.wav'): continue
 
