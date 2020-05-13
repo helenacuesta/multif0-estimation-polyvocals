@@ -64,7 +64,7 @@ def main(args):
                 if any(fqs <= 0):
                     est_freqs[i] = np.array([f for f in fqs if f > 0])
 
-            output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0]), thresh)
+            output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], thresh))
             utils.save_multif0_output(est_times, est_freqs, output_mf0)
 
             print("     Multiple F0 prediction exported for {}".format(fname))
