@@ -25,7 +25,7 @@ def main(args):
     fname_list = np.array(pd.read_csv(list_of_files, header=None))[1:]
 
 
-    save_key = 'exp5multif0'
+    save_key = 'exp3multif0'
     model_path = os.path.join(pth_model, "{}.pkl".format(save_key))
 
     model = models.build_model3()
