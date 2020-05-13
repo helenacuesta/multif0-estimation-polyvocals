@@ -20,8 +20,9 @@ def main(args):
     save_path = args.save_path
     list_of_files = args.list_of_files
 
-    audio_path = np.loadtxt(list_of_files)[0]
-    fname_list = np.loadtxt(list_of_files)[1:]
+    audio_path = np.loadtxt(list_of_files)
+    print(audio_path, type(audio_path))
+    #fname_list = np.loadtxt(list_of_files)[1:]
 
 
     save_key = 'exp5multif0'
