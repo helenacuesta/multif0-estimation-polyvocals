@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '../')
+
 import utils
 import config
 
