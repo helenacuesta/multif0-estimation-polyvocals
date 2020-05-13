@@ -1,0 +1,6 @@
+/scratch/hc2945/data/ChoirDataset
+CH01_Bach_audio.wav
+CH02_Brahms_audio.wav
+CH03_Mendelssohn_audio.wav
+CH04_Mendelssohn_audio.wav
+CH05_Byrd_audio.wav

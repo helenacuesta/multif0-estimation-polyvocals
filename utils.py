@@ -399,50 +399,6 @@ def keras_generator(data_list, input_patch_size, batch_size=16, active_str=200, 
         print("\n Batch length: ".format(len(batch['X1'])))
         yield [batch['X1'], batch['X2']], batch['Y']
 
-def iterate_files(inputs, batchsize, shuffle=True):
-
-    if shuffle:
-        indices = np.arange(len(inputs))
-        np.random.shuffle(indices)
-    for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
-        if shuffle:
-            excerpt = indices[start_idx:start_idx + batchsize]
-        else:
-            excerpt = slice(start_idx, start_idx + batchsize)
-        yield inputs[excerpt]
-
-
-def data_generator(data_list, input_patch_size, files_batch, batch_size):
-    """Alternative generator, to be tested
-    """
-    for files in iterate_files(data_list, files_batch):
-        for fpath_in, fpath_out in files:
-            batch_gen = patch_generator(fpath_in, fpath_out, input_patch_size=input_patch_size)
-            for batch in batch_gen:
-                print(len(batch['X1']))
-                yield [batch['X1'], batch['X2']], batch['Y']
-
-
-
-
-def keras_generator_single(data_list, input_patch_size, batch_size=16, active_str=200, muxrate=20):
-    """Generator to be passed to a keras model. Specifically for single HCQT input, no phase
-    """
-    streams = []
-    for fpath_in, fpath_out in data_list:
-        streams.append(
-            pescador.Streamer(
-                patch_generator_single, fpath_in, fpath_out,
-                input_patch_size=input_patch_size
-            )
-        )
-
-    stream_mux = pescador.StochasticMux(streams, active_str, rate=muxrate, random_state=RANDOM_STATE)
-
-    batch_generator = pescador.buffer_stream(stream_mux, batch_size)
-
-    for batch in batch_generator:
-        yield batch['X'], batch['Y']
 
 
 def grab_patch_output(f, t, n_f, n_t, y_data):
@@ -459,13 +415,6 @@ def grab_patch_input(f, t, n_f, n_t, x_data_1, x_data_2):
     )[np.newaxis, :, :, :], np.transpose(
             x_data_2[:, f: f + n_f, t: t + n_t], (1, 2, 0)
         )[np.newaxis, :, :, :]
-
-def grab_patch_input_single(f, t, n_f, n_t, x_data):
-    """Get a time-frequency patch from an input file
-    """
-    return np.transpose(
-        x_data[:, f: f + n_f, t: t + n_t], (1, 2, 0)
-    )[np.newaxis, :, :, :]
 
 
 def patch_generator(fpath_in, fpath_out, input_patch_size):
@@ -499,37 +448,6 @@ def patch_generator(fpath_in, fpath_out, input_patch_size):
             )
             #print(x1.shape, x2.shape, y.shape)
             yield dict(X1=x1[0], X2=x2[0], Y=y[0])
-    except:
-        pass
-
-def patch_generator_single(fpath_in, fpath_out, input_patch_size):
-    """Generator that yields an infinite number of patches
-       for a single input, output pair. For single HCQT input
-    """
-    try:
-        data_in = np.load(fpath_in, allow_pickle=True).item()['dphase/mag'][0]
-        data_out = np.load(fpath_out, allow_pickle=True)
-
-        data_in = np.transpose(data_in, (2, 1, 0))
-
-
-        _, _, n_times = data_in.shape
-        n_f, n_t = input_patch_size
-
-        t_vals = np.arange(0, n_times - n_t)
-        np.random.shuffle(t_vals)
-
-        for t in t_vals:
-            f = 0
-            t = np.random.randint(0, n_times - n_t)
-
-            x = grab_patch_input_single(
-                f, t, n_f, n_t, data_in
-            )
-            y = grab_patch_output(
-                f, t, n_f, n_t, data_out
-            )
-            yield dict(X=x[0], Y=y[0])
     except:
         pass
 
@@ -695,12 +613,6 @@ def get_single_test_prediction(model, npy_file=None, audio_file=None):
                           )[0, :, :]
 
         output_list.append(p)
-        '''
-        output_list.append(
-            model.predict([input_hcqt[:, :, t:t+5000, :], input_dphase[:, :, t:t+5000, :]]
-                          )[0, :, :]
-        )
-        '''
 
     predicted_output = np.hstack(output_list)
     return predicted_output, input_hcqt, input_dphase
@@ -727,7 +639,6 @@ def pitch_activations_to_mf0(pitch_activation_mat, thresh):
 
 def load_broken_mf0(annotpath):
     '''Equivalent function to load_ragged_time_series in mir_eval for bad-formatted csv files
-        as the ones I have now.
     '''
 
     times = []
@@ -883,62 +794,5 @@ def score_on_test_set(model, save_path, dat, thresh=0.5):
 
 
 
-class Data_single(object):
-    """Class that deals with all the data mess
-    """
-    def __init__(self, data_splits_path, data_path, input_patch_size, batch_size,
-                 active_str, muxrate):
 
-        self.data_splits_path = data_splits_path
-        self.input_patch_size = input_patch_size
-
-        self.data_path = data_path
-
-        (self.train_set,
-         self.validation_set,
-         self.test_set) = self.load_data_splits()
-
-        self.train_files = get_file_paths(self.train_set, self.data_path)
-        self.validation_files = get_file_paths(
-            self.validation_set, self.data_path
-        )
-        self.test_files = get_file_paths(self.test_set, self.data_path)
-
-        self.batch_size = batch_size
-        self.active_str = active_str
-        self.muxrate = muxrate
-
-    def load_data_splits(self):
-        """Get randomized artist-conditional splits
-        """
-        with open(self.data_splits_path, 'r') as fhandle:
-            data_splits = json.load(fhandle)
-
-        return data_splits['train'], data_splits['validate'], data_splits['test']
-
-    def get_train_generator(self):
-        """return a training data generator
-        """
-        return keras_generator_single(
-            self.train_files, self.input_patch_size,
-            self.batch_size, self.active_str, self.muxrate
-        )
-
-
-
-    def get_validation_generator(self):
-        """return a validation data generator
-        """
-        return keras_generator_single(
-            self.validation_files, self.input_patch_size,
-            self.batch_size, self.active_str, self.muxrate
-        )
-
-    def get_test_generator(self):
-        """return a test data generator
-        """
-        return keras_generator_single(
-            self.test_files, self.input_patch_size,
-            self.batch_size, self.active_str, self.muxrate
-        )
 
