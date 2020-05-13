@@ -3,6 +3,8 @@ import utils
 import pandas as pd
 from config import *
 
+from scipy.signal import medfilt2d
+
 import os
 import argparse
 
@@ -51,12 +53,14 @@ def main(args):
                                                                   npy_file=None,
                                                                   audio_file=os.path.join(audio_path, fname))
 
+        predicted_output = medfilt2d(predicted_output, kernel_size=(1, 11))
+
         np.save(os.path.join(
             save_path, "{}_prediction.npy".format(fname.split('.')[0])),
             predicted_output.astype(np.float32))
 
         # get multif0 output from prediction
-        for thresh in [0.3, 0.4, 0.5, 0.6]:
+        for thresh in [0.2, 0.3, 0.4, 0.5, 0.6]:
 
             est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, thresh)
 
