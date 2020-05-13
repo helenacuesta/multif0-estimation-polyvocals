@@ -594,8 +594,8 @@ def get_single_test_prediction(model, npy_file=None, audio_file=None):
         # should not be the case
         pump = create_pump_object()
         features = compute_pump_features(pump, audio_file)
-        input_hcqt = features.item()['dphase/mag'][0]
-        input_dphase = features.item()['dphase/dphase'][0]
+        input_hcqt = features['dphase/mag'][0]
+        input_dphase = features['dphase/dphase'][0]
 
     else:
         raise ValueError("one of npy_file or audio_file must be specified")
