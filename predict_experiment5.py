@@ -25,7 +25,7 @@ def main(args):
     fname_list = np.array(pd.read_csv(list_of_files, header=None))[1:]
 
 
-    save_key = 'exp3multif0'
+    save_key = 'exp5multif0'
     model_path = os.path.join(pth_model, "{}.pkl".format(save_key))
 
     model = models.build_model3()
@@ -56,16 +56,18 @@ def main(args):
             predicted_output.astype(np.float32))
 
         # get multif0 output from prediction
-        est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, thresh)
+        for thresh in [0.3, 0.4, 0.5, 0.6]:
 
-        for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
-            if any(fqs <= 0):
-                est_freqs[i] = np.array([f for f in fqs if f > 0])
+            est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, thresh)
 
-        output_mf0 = os.path.join(save_path, "{}.csv".format(fname.split('.')[0]))
-        utils.save_multif0_output(est_times, est_freqs, output_mf0)
+            for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
+                if any(fqs <= 0):
+                    est_freqs[i] = np.array([f for f in fqs if f > 0])
 
-        print("     Multiple F0 prediction exported for {}".format(fname))
+            output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0]), thresh)
+            utils.save_multif0_output(est_times, est_freqs, output_mf0)
+
+            print("     Multiple F0 prediction exported for {}".format(fname))
 
 
 
