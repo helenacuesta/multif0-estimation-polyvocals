@@ -23,8 +23,8 @@ for fname in test_set['test']:
     save_dir = '/scratch/hc2945/data/deepsalience_output'
     output_format = 'multif0'
 
-    call_string = "python predict_on_audio.py {} {} {} -f {}".format(
-        audio_fpath, task, save_dir, output_format
+    call_string = "python predict_on_audio.py {} {} {} -f {} -t {}".format(
+        audio_fpath, task, save_dir, output_format, 0.2
     )
 
     subprocess.call(call_string, shell=True)

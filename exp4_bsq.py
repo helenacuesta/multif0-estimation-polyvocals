@@ -84,7 +84,7 @@ def main(args):
                     est_freqs[i] = np.array([f for f in fqs if f > 0])
 
             # evaluation
-            scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs)
+            scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=0.2)
             accuracies.append(scores['Accuracy'])
 
         mx_idx = np.argmax(accuracies)
@@ -94,19 +94,19 @@ def main(args):
             if any(fqs <= 0):
                 est_freqs[i] = np.array([f for f in fqs if f > 0])
 
-        output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], thresh))
-        utils.save_multif0_output(est_times, est_freqs, output_mf0)
+        #output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], trsh))
+        #utils.save_multif0_output(est_times, est_freqs, output_mf0)
 
-        scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs)
+        scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=0.2)
         scores['track'] = fname.replace('.wav', '')
         all_scores.append(scores)
         print("     Multiple F0 prediction exported and evaluated for {}".format(fname))
 
     scores_path = os.path.join(
-        save_path, '{}_all_scores.csv'.format('test_set')
+        save_path, '{}_all_scores_20_cents.csv'.format('test_set')
     )
     score_summary_path = os.path.join(
-        save_path, "{}_score_summary.csv".format('test_set')
+        save_path, "{}_score__20_cents_summary.csv".format('test_set')
     )
     df = pd.DataFrame(all_scores)
     df.to_csv(scores_path)
