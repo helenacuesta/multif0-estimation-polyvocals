@@ -37,6 +37,10 @@ for audiofile in test_set:
 
     if not audiofile.endswith('wav'): continue
 
+    if 'rev_' in audiofile:
+        audiopath = os.path.join(audiopath, 'reverb')
+
+
     #piece = audiofile.split('_')[0]
 
     ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(
