@@ -31,15 +31,16 @@ export_path = '/scratch/hc2945/data/musingers_data'
 audiopath = '/scratch/hc2945/data/audiomixtures'
 
 data_splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
-_, _, test_set = utils.load_json_data(data_splits_path)
+test_set = utils.load_json_data(data_splits_path)
 
-for audiofile in test_set:
+for audiofile in test_set['test']:
+
+    audiopath = '/scratch/hc2945/data/audiomixtures'
 
     if not audiofile.endswith('wav'): continue
 
     if 'rev_' in audiofile:
         audiopath = os.path.join(audiopath, 'reverb')
-
 
     #piece = audiofile.split('_')[0]
 
