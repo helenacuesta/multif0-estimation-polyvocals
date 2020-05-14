@@ -226,5 +226,10 @@ if __name__ == "__main__":
                         type=str,
                         help="String to save model-related data.")
 
+    parser.add_argument("--data_splits_file",
+                        dest='data_splits_file',
+                        type=str,
+                        help="Filename of the data splits file to use in the experiment.")
+
 
     main(parser.parse_args())
