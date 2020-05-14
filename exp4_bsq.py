@@ -74,7 +74,8 @@ def main(args):
         accuracies = []
 
         # get multif0 output from prediction
-        for thresh in [0.2, 0.3, 0.4, 0.5]:
+        thresholds = [0.2, 0.3, 0.4, 0.5]
+        for thresh in thresholds:
 
             est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, thresh)
 
@@ -87,7 +88,7 @@ def main(args):
             accuracies.append(scores['Accuracy'])
 
         mx_idx = np.argmax(accuracies)
-        trsh = thresh[mx_idx]
+        trsh = thresholds[mx_idx]
         est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, trsh)
         for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
             if any(fqs <= 0):
