@@ -2,13 +2,16 @@
 #
 #SBATCH --job-name=augmentation
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
 #SBATCH --time=24:00:00
 #SBATCH --output=augm.out
 #SBATCH --error=augm.err
 
 
 module purge
+
+module load cudnn/7.0v4.0
+module load cuda/10.1.105
 
 module load rubberband/intel/1.8.1
 module load ffmpeg/intel/3.2.2
