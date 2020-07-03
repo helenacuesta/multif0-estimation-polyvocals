@@ -99,7 +99,7 @@ def pitch_shifting(audio_fname, jams_fname, audio_folder, jams_folder, n_samples
 
 #####################################################################################
 
-def add_unvoiced_frames(annot_path, audio_path, format='csv'):
+def add_unvoiced_frames(annot_path, audio_path, format='csv', fs=22050.0):
 
     if not os.path.exists(os.path.join(annot_path, 'constant_timebase')):
         os.mkdir(os.path.join(annot_path, 'constant_timebase'))
@@ -109,7 +109,7 @@ def add_unvoiced_frames(annot_path, audio_path, format='csv'):
         if not 'smoothedpitchtrack' in fname: continue
 
         utils.pyin_to_unvoiced(annot_path, fname, audio_path, fname.replace('_vamp_pyin_pyin_smoothedpitchtrack.csv',
-                                                                            '.wav'))
+                                                                            '.wav'), fs=fs)
 
 
 #####################################################################################
@@ -119,7 +119,7 @@ def main(args):
     # fix pYIN annotations for BC and BSQ and then keep going. After this, annot folder becomes constant_timebase
     if args.dataset == 'BC' or args.dataset == 'BSQ':
 
-        add_unvoiced_frames(args.path_to_annotations, args.path_to_audio)
+        add_unvoiced_frames(args.path_to_annotations, args.path_to_audio, fs=44100.0)
 
         # once unvoiced frames are fixed, data augmentation steps for audio and annotations (CSV)
         for fn in os.listdir(os.path.join(args.path_to_annotations, 'constant_timebase')):
