@@ -126,7 +126,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
     # ------------ Process ESMUC ChoralSet ------------ #
 
-    print("Processing Choral Singing Dataset...")
+    print("Processing ESMUC Choral Dataset...")
 
     # Der Greis
     for song in dataset['ECS']['DG_songs']:
@@ -265,6 +265,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
     # ------------ Process Dagstuhl ChoirSet ------------ #
 
+    print("Processing Dagstuhl ChoirSet...")
 
     # Full Choir setting
     for song in dataset['DCS']['FC_songs']:
@@ -393,6 +394,8 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         print('{} quartets mixed and exported'.format(song))
 
     # ------------ Process Barbershop Quartets ------------ #
+    print("Processing Barbershop Quartets...")
+
     song_idx = -1
 
     for song in dataset['BSQ']['songs']:
@@ -438,6 +441,9 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
         print('{} quartets mixed and exported'.format(song))
 
     # ------------ Process Bach Chorales ------------ #
+
+    print("Processing Bach Chorales...")
+
     song_idx = -1
     for song in dataset['BC']['songs']:
         song_idx += 1
