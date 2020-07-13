@@ -16,11 +16,11 @@ module load cuda/10.1.105
 module load rubberband/intel/1.8.1
 module load ffmpeg/intel/3.2.2
 
-python data_augmentation.py --f0-path /scratch/hc2945/data/BachChorales/BC/pyin_annot --audio-path /scratch/hc2945/data/BachChorales/BC --dataset BC
-echo BC done!
+#python data_augmentation.py --f0-path /scratch/hc2945/data/BachChorales/BC/pyin_annot --audio-path /scratch/hc2945/data/BachChorales/BC --dataset BC
+#echo BC done!
 
-python data_augmentation.py --f0-path /scratch/hc2945/data/BarbershopQuartets/BQ/pyin_annot --audio-path /scratch/hc2945/data/BarbershopQuartets/BQ --dataset BSQ
-echo BSQ done!
+#python data_augmentation.py --f0-path /scratch/hc2945/data/BarbershopQuartets/BQ/pyin_annot --audio-path /scratch/hc2945/data/BarbershopQuartets/BQ --dataset BSQ
+#echo BSQ done!
 
 python data_augmentation.py --f0-path /scratch/hc2945/data/CSD --audio-path /scratch/hc2945/data/CSD --dataset CSD
 echo CSD done!
