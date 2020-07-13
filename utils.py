@@ -310,6 +310,37 @@ def compute_features_mtrack(mtrack, save_dir, wavmixes_path, idx):
 
     compute_multif0_complete(mtrack, save_dir, wavmixes_path)
 
+def create_data_split(mtrack_dict, output_path):
+
+    mtracks = mtrack_dict.keys()
+
+    all_tracks = [
+        m for m in mtracks
+    ]
+    Ntracks = len(all_tracks)
+
+
+    train_perc = 0.75
+    validation_perc = 0.1
+    test_perc = 1 - train_perc - validation_perc
+
+    # consider doing the training taking into account the songs
+    # maybe leaving one song out for evaluation
+
+    mtracks_randomized = np.random.permutation(all_tracks)
+
+    train_set = mtracks_randomized[:int(train_perc * Ntracks)]
+    validation_set = mtracks_randomized[int(train_perc * Ntracks):int(train_perc * Ntracks) + int(validation_perc * Ntracks)]
+    test_set = mtracks_randomized[int(train_perc * Ntracks) + int(validation_perc * Ntracks):]
+
+    data_splits = {
+        'train': list(train_set),
+        'validate': list(validation_set),
+        'test': list(test_set)
+    }
+
+    with open(output_path, 'w') as fhandle:
+        fhandle.write(json.dumps(data_splits, indent=2))
 
 ''' TRAINING UTIL FUNCTIONS
 '''
