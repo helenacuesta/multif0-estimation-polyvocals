@@ -7,6 +7,7 @@ import csv
 
 import config
 import utils
+import utils_train
 import models
 
 
@@ -27,11 +28,11 @@ class Data(object):
          self.validation_set,
          self.test_set) = self.load_data_splits()
 
-        self.train_files = utils.get_file_paths(self.train_set, self.data_path)
-        self.validation_files = utils.get_file_paths(
+        self.train_files = utils_train.get_file_paths(self.train_set, self.data_path)
+        self.validation_files = utils_train.get_file_paths(
             self.validation_set, self.data_path
         )
-        self.test_files = utils.get_file_paths(self.test_set, self.data_path)
+        self.test_files = utils_train.get_file_paths(self.test_set, self.data_path)
 
         self.batch_size = batch_size
         self.active_str = active_str
@@ -47,7 +48,7 @@ class Data(object):
     def get_train_generator(self):
         """return a training data generator
         """
-        return utils.keras_generator(
+        return utils_train.keras_generator(
             self.train_files, self.input_patch_size,
             self.batch_size, self.active_str, self.muxrate
         )
@@ -57,7 +58,7 @@ class Data(object):
     def get_validation_generator(self):
         """return a validation data generator
         """
-        return utils.keras_generator(
+        return utils_train.keras_generator(
             self.validation_files, self.input_patch_size,
             self.batch_size, self.active_str, self.muxrate
         )
@@ -65,7 +66,7 @@ class Data(object):
     def get_test_generator(self):
         """return a test data generator
         """
-        return utils.keras_generator(
+        return utils_train.keras_generator(
             self.test_files, self.input_patch_size,
             self.batch_size, self.active_str, self.muxrate
         )
@@ -106,7 +107,8 @@ def train(model, model_save_path, data_splits_file, batch_size, active_str, muxr
     validation_generator = dat.get_validation_generator()
 
     model.compile(
-        loss=utils.bkld, metrics=['mse', utils.soft_binary_accuracy],
+        loss=utils_train.bkld,
+        metrics=['mse', utils_train.soft_binary_accuracy],
         optimizer='adam'
     )
 
@@ -134,22 +136,22 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
-     ) = utils.get_paths(exper_dir, save_key)
+     ) = utils_train.get_paths(exper_dir, save_key)
 
     ## Results plots
     print("plotting results...")
-    utils.plot_metrics_epochs(history, plot_save_path)
+    utils_train.plot_metrics_epochs(history, plot_save_path)
 
     ## Evaluate
     print("getting model metrics...")
-    utils.get_model_metrics(dat, model, model_scores_path)
+    utils_train.get_model_metrics(dat, model, model_scores_path)
 
     print("getting best threshold...")
-    thresh = utils.get_best_thresh(dat, model)
+    thresh = utils_train.get_best_thresh(dat, model)
 
 
     print("scoring multif0 metrics on test sets...")
-    utils.score_on_test_set(model, save_path, dat, thresh)
+    utils_train.score_on_test_set(model, save_path, dat, thresh)
 
 
 def experiment(save_key, model, data_splits_file, batch_size, active_str, muxrate):
@@ -161,7 +163,7 @@ def experiment(save_key, model, data_splits_file, batch_size, active_str, muxrat
 
     (save_path, _, plot_save_path,
      model_scores_path, _, _
-     ) = utils.get_paths(exper_dir, save_key)
+     ) = utils_train.get_paths(exper_dir, save_key)
 
 
     model_save_path = '/scratch/hc2945/data/models/'
