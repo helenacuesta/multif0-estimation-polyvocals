@@ -131,23 +131,24 @@ def grid_to_bins(grid, start_bin_val, end_bin_val):
     return bins
 
 
-def save_data(save_path, prefix, X, Y, f, t):
+def save_data(save_path, input_path, output_path, prefix, X, Y, f, t):
 
-    input_path = os.path.join(save_path, 'inputs')
-    output_path = os.path.join(save_path, 'outputs')
+    i_path = os.path.join(save_path, 'inputs')
+    o_path = os.path.join(save_path, 'outputs')
+
+    if not os.path.exists(i_path):
+        os.mkdir(i_path)
+    if not os.path.exists(o_path):
+        os.mkdir(o_path)
 
     if not os.path.exists(input_path):
-        os.mkdir(input_path)
-    if not os.path.exists(output_path):
-        os.mkdir(output_path)
 
-    if not os.path.exists(os.path.join(input_path, "{}_input.npy".format(prefix))):
-        np.save(os.path.join(input_path, "{}_input.npy".format(prefix)), X, allow_pickle=True)
-        np.save(os.path.join(output_path, "{}_output.npy".format(prefix)), Y, allow_pickle=True)
+        np.save(input_path, X, allow_pickle=True)
+        np.save(output_path, Y, allow_pickle=True)
         print("    Saved inputs and targets targets for {} to {}".format(prefix, save_path))
 
     else:
-        np.save(os.path.join(output_path, "{}_output.npy".format(prefix)), Y, allow_pickle=True)
+        np.save(output_path, Y, allow_pickle=True)
         print("    Saved only targets for {} to {}".format(prefix, save_path))
 
 def get_all_pitch_annotations(mtrack):
@@ -275,8 +276,14 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
     prefix = "{}".format(mtrack['filename'].split('.')[0])
 
-    input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
-    output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
+    if 'reverb' in mtrack['audiopath']:
+
+        input_path = os.path.join(save_dir, 'inputs', "rev_{}_input.npy".format(prefix))
+        output_path = os.path.join(save_dir, 'outputs', "rev_{}_output.npy".format(prefix))
+    else:
+        input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
+        output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
+
 
     if os.path.exists(input_path) and os.path.exists(output_path):
         print("    > already done!")
@@ -299,7 +306,7 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
         X, Y, f, t = get_input_output_pairs_pump(
             multif0_mix_path, times, freqs)
 
-        save_data(save_dir, prefix, X, Y, f, t)
+        save_data(save_dir, input_path, output_path, prefix, X, Y, f, t)
 
     else:
         print("    {} No multif0 data".format(mtrack['filename']))
@@ -314,9 +321,15 @@ def create_data_split(mtrack_dict, output_path):
 
     mtracks = mtrack_dict.keys()
 
-    all_tracks = [
-        m for m in mtracks
-    ]
+    all_tracks = []
+
+    for m in mtracks:
+        if 'reverb' in mtrack_dict[m]['audiopath']:
+            all_tracks.append('rev_' + m)
+        else:
+            all_tracks.append(m)
+
+
     Ntracks = len(all_tracks)
 
 

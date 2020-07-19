@@ -420,9 +420,9 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
         # no combos here, there are only four singers per song
         params['output_fname'] = "{}_1_2_2_2.wav".format(song)
-
+        '''
         if compute_audio_mix and not os.path.exists(os.path.join(mixes_wavpath, params['output_fname'])):
-            combine_audio_files(params)
+            combine_audio_files(params)'''
         
 
         if compute_metadata:
