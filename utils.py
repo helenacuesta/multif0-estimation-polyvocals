@@ -276,6 +276,10 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
 
     prefix = "{}".format(mtrack['filename'].split('.')[0])
 
+    input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
+    output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
+
+    '''
     if 'reverb' in mtrack['audiopath']:
 
         input_path = os.path.join(save_dir, 'inputs', "rev_{}_input.npy".format(prefix))
@@ -283,15 +287,23 @@ def compute_multif0_complete(mtrack, save_dir, wavmixes_path):
     else:
         input_path = os.path.join(save_dir, 'inputs', "{}_input.npy".format(prefix))
         output_path = os.path.join(save_dir, 'outputs', "{}_output.npy".format(prefix))
+    '''
 
 
     if os.path.exists(input_path) and os.path.exists(output_path):
         print("    > already done!")
         return
 
-    multif0_mix_path = os.path.join(
-        mtrack['audiopath'], mtrack['filename']
-    )
+    if 'rev_' in prefix:
+        multif0_mix_path = os.path.join(
+            mtrack['audiopath'], mtrack['filename'][4:]
+        )
+
+    else:
+        multif0_mix_path = os.path.join(
+            mtrack['audiopath'], mtrack['filename']
+        )
+
 
     if os.path.exists(multif0_mix_path):
 
@@ -321,13 +333,17 @@ def create_data_split(mtrack_dict, output_path):
 
     mtracks = mtrack_dict.keys()
 
-    all_tracks = []
+    all_tracks = [
+        m for m in mtracks
+    ]
 
+    '''
     for m in mtracks:
         if 'reverb' in mtrack_dict[m]['audiopath']:
             all_tracks.append('rev_' + m)
         else:
             all_tracks.append(m)
+    '''
 
 
     Ntracks = len(all_tracks)
