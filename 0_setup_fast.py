@@ -125,7 +125,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
@@ -181,7 +181,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
@@ -236,7 +236,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
 
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
@@ -290,7 +290,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                                 params['filenames'][idx])'''
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
@@ -345,7 +345,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                             params['filenames'][idx])
                 mtracks = create_dict_entry(mtracks,
                                             os.path.join(mixes_wavpath, 'reverb'),
-                                            params['output_fname'],
+                                            'rev_' + params['output_fname'],
                                             annotation_files,
                                             os.path.join(params['annot_folder'], 'reverb')
                                             )
@@ -395,7 +395,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                             params['filenames'][idx])
                 mtracks = create_dict_entry(mtracks,
                                             os.path.join(mixes_wavpath, 'reverb'),
-                                            params['output_fname'],
+                                            'rev_' + params['output_fname'],
                                             annotation_files,
                                             os.path.join(params['annot_folder'], 'reverb')
                                             )
@@ -444,7 +444,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                             params['filenames'][idx])
                 mtracks = create_dict_entry(mtracks,
                                             os.path.join(mixes_wavpath, 'reverb'),
-                                            params['output_fname'],
+                                            'rev_' + params['output_fname'],
                                             annotation_files,
                                             os.path.join(params['annot_folder'], 'reverb')
                                             )
@@ -500,7 +500,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                                 params['filenames'][idx])
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
@@ -557,7 +557,7 @@ def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_datas
                                                 params['filenames'][idx])
                     mtracks = create_dict_entry(mtracks,
                                                 os.path.join(mixes_wavpath, 'reverb'),
-                                                params['output_fname'],
+                                                'rev_' + params['output_fname'],
                                                 annotation_files,
                                                 os.path.join(params['annot_folder'], 'reverb')
                                                 )
