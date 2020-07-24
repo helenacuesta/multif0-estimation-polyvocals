@@ -190,7 +190,7 @@ def experiment(save_key, model, data_splits_file, batch_size, active_str, muxrat
 
 def main(args):
 
-    batch_size = 16
+    batch_size = 32
     active_str = 100
     muxrate = 32
 
