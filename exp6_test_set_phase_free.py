@@ -40,10 +40,18 @@ def main(args):
         #fname = fname[0]
         if not fname.endswith('.wav'): continue
 
-        # predict using trained model
-        predicted_output, _, _ = utils_train.get_single_test_prediction_phase_free(model,
-                                                                        npy_file=None,
-                                                                        audio_file=os.path.join(config.audio_save_folder, fname))
+        if 'rev_' in fname:
+            # predict using trained model
+            predicted_output, _, _ = utils_train.get_single_test_prediction_phase_free(model,
+                                                                            npy_file=None,
+                                                                            audio_file=os.path.join(
+                                                                                config.audio_save_folder, 'reverb',
+                                                                                                    fname))
+        else:
+            predicted_output, _, _ = utils_train.get_single_test_prediction_phase_free(model,
+                                                                                       npy_file=None,
+                                                                                       audio_file=os.path.join(
+                                                                                           config.audio_save_folder, fname))
 
         predicted_output = medfilt2d(predicted_output, kernel_size=(1, 11))
 
