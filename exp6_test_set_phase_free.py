@@ -46,7 +46,7 @@ def main(args):
                                                                             npy_file=None,
                                                                             audio_file=os.path.join(
                                                                                 config.audio_save_folder, 'reverb',
-                                                                                                    fname))
+                                                                                                    fname[4:]))
         else:
             predicted_output, _, _ = utils_train.get_single_test_prediction_phase_free(model,
                                                                                        npy_file=None,
