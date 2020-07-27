@@ -1,5 +1,5 @@
 import models
-import utils
+import utils_train
 import pandas as pd
 from config import *
 import mir_eval
@@ -37,7 +37,7 @@ def main(args):
     model.load_weights(model_path)
 
     model.compile(
-        loss=utils.bkld, metrics=['mse', utils.soft_binary_accuracy],
+        loss=utils_train.bkld, metrics=['mse', utils_train.soft_binary_accuracy],
         optimizer='adam'
     )
 
@@ -51,7 +51,7 @@ def main(args):
         if not fname.endswith('.wav'): continue
 
         # predict using trained model
-        predicted_output, _, _ = utils.get_single_test_prediction(model,
+        predicted_output, _, _ = utils_train.get_single_test_prediction(model,
                                                                   npy_file=None,
                                                                   audio_file=os.path.join(audio_path, fname))
 
@@ -77,7 +77,7 @@ def main(args):
         thresholds = [0.2, 0.3, 0.4, 0.5]
         for thresh in thresholds:
 
-            est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, thresh)
+            est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, thresh)
 
             for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
                 if any(fqs <= 0):
@@ -89,7 +89,7 @@ def main(args):
 
         mx_idx = np.argmax(accuracies)
         trsh = thresholds[mx_idx]
-        est_times, est_freqs = utils.pitch_activations_to_mf0(predicted_output, trsh)
+        est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, trsh)
         for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
             if any(fqs <= 0):
                 est_freqs[i] = np.array([f for f in fqs if f > 0])

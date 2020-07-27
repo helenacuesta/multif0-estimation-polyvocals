@@ -288,6 +288,46 @@ def get_model_metrics(data_object, model, model_scores_path):
     print(df)
     df.to_csv(model_scores_path)
 
+def get_single_test_prediction_phase_free(model, npy_file=None, audio_file=None):
+    """Generate output from a model given an input numpy file
+    """
+    if npy_file is not None:
+
+        input_hcqt = np.load(npy_file, allow_pickle=True).item()['dphase/mag'][0]
+        input_dphase = np.load(npy_file, allow_pickle=True).item()['dphase/dphase'][0]
+
+    elif audio_file is not None:
+        # should not be the case
+        pump = utils.create_pump_object()
+        features = utils.compute_pump_features(pump, audio_file)
+        input_hcqt = features['dphase/mag'][0]
+        input_dphase = features['dphase/dphase'][0]
+
+        # replace phase info by zeros
+        dim_phase = input_dphase.shape
+        input_dphase = np.zeros(dim_phase)
+        print("     >> Phase replaced by zeros!")
+
+    else:
+        raise ValueError("one of npy_file or audio_file must be specified")
+
+    input_hcqt = input_hcqt.transpose(1, 2, 0)[np.newaxis, :, :, :]
+    input_dphase = input_dphase.transpose(1, 2, 0)[np.newaxis, :, :, :]
+
+    n_t = input_hcqt.shape[2]
+    t_slices = list(np.arange(0, n_t, 5000))
+    output_list = []
+    # we need two inputs
+    for t in t_slices:
+        p = model.predict([np.transpose(input_hcqt[:, :, t:t+5000, :], (0, 1, 3, 2)),
+                           np.transpose(input_dphase[:, :, t:t+5000, :], (0, 1, 3, 2))]
+                          )[0, :, :]
+
+        output_list.append(p)
+
+    predicted_output = np.hstack(output_list)
+    return predicted_output, input_hcqt, input_dphase
+
 
 def get_single_test_prediction(model, npy_file=None, audio_file=None):
     """Generate output from a model given an input numpy file

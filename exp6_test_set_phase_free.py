@@ -1,33 +1,25 @@
 import models
 import utils_train
-import pandas as pd
+import utils
 from config import *
-
+import config
 from scipy.signal import medfilt2d
 
-import os
 import argparse
+import os
 
-
-'''Predict a multiple F0 output using the specified model from an input audio file
-'''
-
-
-''' Parameters
-'''
 
 
 def main(args):
 
     pth_model = args.pth_model
     save_path = args.save_path
-    list_of_files = args.list_of_files
+    #list_of_files = args.list_of_files
 
-    audio_path = np.array(pd.read_csv(list_of_files, header=None))[0][0]
-    fname_list = np.array(pd.read_csv(list_of_files, header=None))[1:]
+    #audio_path = np.array(pd.read_csv(list_of_files, header=None))[0][0]
+    #fname_list = np.array(pd.read_csv(list_of_files, header=None))[1:]
 
-
-    save_key = 'exp5multif0'
+    save_key = 'exp3multif0'
     model_path = os.path.join(pth_model, "{}.pkl".format(save_key))
 
     model = models.build_model3()
@@ -40,18 +32,18 @@ def main(args):
 
     print("Model compiled")
 
-    thresh = 0.5
+    data_splits_path = os.path.join(config.data_save_folder, 'data_splits.json')
+    test_set = utils.load_json_data(data_splits_path)
 
-    for fname in fname_list:
+    for fname in test_set['test']:
 
-        fname = fname[0]
-
+        #fname = fname[0]
         if not fname.endswith('.wav'): continue
 
         # predict using trained model
-        predicted_output, _, _ = utils_train.get_single_test_prediction(model,
-                                                                  npy_file=None,
-                                                                  audio_file=os.path.join(audio_path, fname))
+        predicted_output, _, _ = utils_train.get_single_test_prediction_phase_free(model,
+                                                                        npy_file=None,
+                                                                        audio_file=os.path.join(config.audio_save_folder, fname))
 
         predicted_output = medfilt2d(predicted_output, kernel_size=(1, 11))
 
@@ -74,10 +66,9 @@ def main(args):
             print("     Multiple F0 prediction exported for {}".format(fname))
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Predict multiple F0 output using model 3 without reverb. Experiment 5.")
+        description="Predict multiple F0 output using model 3 with the phase set to 0. Experiment 6.")
 
     parser.add_argument("--model_path",
                         dest='pth_model',
@@ -89,11 +80,6 @@ if __name__ == "__main__":
                         type=str,
                         help="Folder to save predicted outputs.")
 
-    parser.add_argument("--list_of_files",
-                        dest='list_of_files',
-                        type=str,
-                        help="Path to the text file with the list of files to process. The first line should contain"
-                        "the folder where the files are located.")
 
 
     main(parser.parse_args())
