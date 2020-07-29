@@ -277,3 +277,29 @@ def build_model3():
     model = Model(inputs=[inputs1, inputs2], outputs=predictions)
 
     return model
+
+def build_model3_mag():
+
+    input_shape_1 = (None, None, 5) # HCQT input shape
+
+    inputs1 = Input(shape=input_shape_1)
+
+    y6a, _ = base_model(inputs1, 'a')
+
+    # conv7 layer
+    y7 = Conv2D(64, (3, 3), padding='same', activation='relu', name='conv7')(y6a)
+    y7a = BatchNormalization()(y7)
+
+    # conv8 layer
+    y8 = Conv2D(64, (3, 3), padding='same', activation='relu', name='conv8')(y7a)
+    y8a = BatchNormalization()(y8)
+
+    y9 = Conv2D(8, (360, 1), padding='same', activation='relu', name='distribution')(y8a)
+    y9a = BatchNormalization()(y9)
+
+    y10 = Conv2D(1, (1, 1), padding='same', activation='sigmoid', name='squishy')(y9a)
+    predictions = Lambda(lambda x: K.squeeze(x, axis=3))(y10)
+
+    model = Model(inputs=inputs1, outputs=predictions)
+
+    return model
