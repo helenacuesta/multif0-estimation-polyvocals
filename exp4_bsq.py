@@ -43,7 +43,9 @@ def main(args):
 
     print("Model compiled")
 
-    all_scores = []
+    all_scores_100 = []
+    all_scores_20 = []
+
     for fname in fname_list:
 
         fname = fname[0]
@@ -97,21 +99,37 @@ def main(args):
         #output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], trsh))
         #utils.save_multif0_output(est_times, est_freqs, output_mf0)
 
-        scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=1)
-        scores['track'] = fname.replace('.wav', '')
-        all_scores.append(scores)
-        print("     Multiple F0 prediction exported and evaluated for {}".format(fname))
+        scores_100 = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=1)
+        scores_100['track'] = fname.replace('.wav', '')
+        all_scores_100.append(scores_100)
 
+        scores_20 = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=0.2)
+        scores_20['track'] = fname.replace('.wav', '')
+        all_scores_20.append(scores_100)
+
+        print("     Multiple F0 prediction exported and evaluated on 100 and 20 cents for {}".format(fname))
+
+    # export results with 100 cents
     scores_path = os.path.join(
         save_path, '{}_all_scores_100_cents.csv'.format('test_set')
     )
     score_summary_path = os.path.join(
-        save_path, "{}_score__100_cents_summary.csv".format('test_set')
+        save_path, "{}_score_100_cents_summary.csv".format('test_set')
     )
-    df = pd.DataFrame(all_scores)
+    df = pd.DataFrame(all_scores_100)
     df.to_csv(scores_path)
     df.describe().to_csv(score_summary_path)
-    print(df.describe())
+
+    # export results with 20 cents
+    scores_path = os.path.join(
+        save_path, '{}_all_scores_20_cents.csv'.format('test_set')
+    )
+    score_summary_path = os.path.join(
+        save_path, "{}_score_20_cents_summary.csv".format('test_set')
+    )
+    df = pd.DataFrame(all_scores_20)
+    df.to_csv(scores_path)
+    df.describe().to_csv(score_summary_path)
 
 
 
