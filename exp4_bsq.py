@@ -105,7 +105,7 @@ def main(args):
 
         scores_20 = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=0.2)
         scores_20['track'] = fname.replace('.wav', '')
-        all_scores_20.append(scores_100)
+        all_scores_20.append(scores_20)
 
         print("     Multiple F0 prediction exported and evaluated on 100 and 20 cents for {}".format(fname))
 
