@@ -299,12 +299,12 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
     print("getting model metrics...")
     utils_train.get_model_metrics(dat, model, model_scores_path)
 
-    print("getting best threshold...")
-    thresh = get_best_thresh(dat, model)
+    #print("getting best threshold...")
+    #thresh = get_best_thresh(dat, model)
 
 
     print("scoring multif0 metrics on test sets...")
-    utils_train.score_on_test_set(model, save_path, dat, thresh)
+    score_on_test_set(model, save_path, dat, thresh=0.4)
 
 
 def experiment(save_key, model, data_splits_file, batch_size, active_str, muxrate):
