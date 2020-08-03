@@ -4,12 +4,14 @@ import json
 import keras
 import numpy as np
 import csv
+import pandas as pd
 
 import config
 import utils
 import utils_train
 import models
 
+import mir_eval
 
 import argparse
 
@@ -115,7 +117,7 @@ def train(model, model_save_path, data_splits_file, batch_size, active_str, muxr
     print(model.summary(line_length=80))
 
     # hopefully fit model
-
+    '''
     history = model.fit_generator(
         train_generator, config.SAMPLES_PER_EPOCH, epochs=config.NB_EPOCHS, verbose=1,
         validation_data=validation_generator, validation_steps=config.NB_VAL_SAMPLES,
@@ -126,10 +128,161 @@ def train(model, model_save_path, data_splits_file, batch_size, active_str, muxr
             keras.callbacks.EarlyStopping(patience=25, verbose=1)
         ]
     )
+    '''
 
     model.load_weights(model_save_path)
+    history = ''
 
     return model, history, dat
+
+def get_single_test_prediction_phase_free(model, npy_file=None, audio_file=None):
+    """Generate output from a model given an input numpy file
+    """
+    if npy_file is not None:
+
+        input_hcqt = np.load(npy_file, allow_pickle=True).item()['dphase/mag'][0]
+
+    elif audio_file is not None:
+        # should not be the case
+        pump = utils.create_pump_object()
+        features = utils.compute_pump_features(pump, audio_file)
+        input_hcqt = features['dphase/mag'][0]
+
+
+    else:
+        raise ValueError("one of npy_file or audio_file must be specified")
+
+    input_hcqt = input_hcqt.transpose(1, 2, 0)[np.newaxis, :, :, :]
+
+    n_t = input_hcqt.shape[2]
+    t_slices = list(np.arange(0, n_t, 5000))
+    output_list = []
+    # we need two inputs
+    for t in t_slices:
+        p = model.predict(np.transpose(input_hcqt[:, :, t:t+5000, :], (0, 1, 3, 2)))[0, :, :]
+
+        output_list.append(p)
+
+    predicted_output = np.hstack(output_list)
+    return predicted_output, input_hcqt
+
+
+def get_best_thresh(dat, model):
+    """Use validation set to get the best threshold value
+    """
+
+    # get files for this test set
+    validation_files = dat.validation_files
+    test_set_path = utils_train.test_path()
+
+    thresh_vals = np.arange(0.1, 1.0, 0.1)
+    thresh_scores = {t: [] for t in thresh_vals}
+    for npy_file, _ in validation_files:
+
+        fname_base = os.path.basename(npy_file).replace('_input.npy', '.csv')
+
+        label_file = os.path.join(
+                test_set_path, fname_base)
+
+        print(label_file)
+
+        # generate prediction on numpy file
+        predicted_output, input_hcqt = get_single_test_prediction_phase_free(model=model, npy_file=npy_file)
+
+        # load ground truth labels
+        ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        #ref_times, ref_freqs = load_broken_mf0(label_file)
+
+        for thresh in thresh_vals:
+            # get multif0 output from prediction
+            est_times, est_freqs = \
+                utils_train.pitch_activations_to_mf0(predicted_output, thresh)
+
+            # get multif0 metrics and append
+            scores = mir_eval.multipitch.evaluate(
+                ref_times, ref_freqs, est_times, est_freqs)
+            thresh_scores[thresh].append(scores['Accuracy'])
+
+    avg_thresh = [np.mean(thresh_scores[t]) for t in thresh_vals]
+    best_thresh = thresh_vals[np.argmax(avg_thresh)]
+    print("Best Threshold is {}".format(best_thresh))
+    print("Best validation accuracy is {}".format(np.max(avg_thresh)))
+    print("Validation accuracy at 0.5 is {}".format(np.mean(thresh_scores[0.5])))
+
+    return best_thresh
+
+def score_on_test_set(model, save_path, dat, thresh=0.5):
+    """score a model on all files in a named test set
+    """
+
+    # get files for this test set
+    test_set_path = utils_train.test_path()
+    print('test set path {}'.format(test_set_path))
+
+    test_npy_files = dat.test_files
+
+    all_scores = []
+    for npy_file in sorted(test_npy_files):
+        npy_file = npy_file[0]
+        print(npy_file)
+        # get input npy file and ground truth label pair
+        fname_base = os.path.basename(npy_file).replace('_input.npy', '.csv')
+        print(fname_base)
+        label_file = os.path.join(
+                test_set_path, fname_base)
+
+        print(label_file)
+
+        # generate prediction on numpy file
+        predicted_output, input_hcqt = get_single_test_prediction_phase_free(model, npy_file)
+
+
+        # save prediction
+        np.save(
+            os.path.join(
+                save_path,
+                "{}_prediction.npy".format(fname_base)
+            ),
+            predicted_output.astype(np.float32)
+        )
+
+        # get multif0 output from prediction
+        est_times, est_freqs = utils_train.pitch_activations_to_mf0(
+            predicted_output, thresh
+        )
+
+        # save multif0 output
+        utils_train.save_multif0_output(
+            est_times, est_freqs,
+            os.path.join(
+                save_path,
+                "{}_prediction.txt".format(fname_base)
+            )
+        )
+
+        # load ground truth labels
+        try:
+            ref_times, ref_freqs = mir_eval.io.load_ragged_time_series(label_file)
+        except:
+            ref_times, ref_freqs = utils_train.load_broken_mf0(label_file)
+
+        # get multif0 metrics and append
+        scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs)
+        scores['track'] = fname_base
+        all_scores.append(scores)
+
+    # save scores to data frame
+    scores_path = os.path.join(
+        save_path, '{}_all_scores.csv'.format('test_set')
+    )
+    score_summary_path = os.path.join(
+        save_path, "{}_score_summary.csv".format('test_set')
+    )
+    df = pd.DataFrame(all_scores)
+    df.to_csv(scores_path)
+    df.describe().to_csv(score_summary_path)
+    print(df.describe())
+
 
 
 def run_evaluation(exper_dir, save_key, history, dat, model):
@@ -139,15 +292,15 @@ def run_evaluation(exper_dir, save_key, history, dat, model):
      ) = utils_train.get_paths(exper_dir, save_key)
 
     ## Results plots
-    print("plotting results...")
-    utils_train.plot_metrics_epochs(history, plot_save_path)
+    #print("plotting results...")
+    #utils_train.plot_metrics_epochs(history, plot_save_path)
 
     ## Evaluate
     print("getting model metrics...")
     utils_train.get_model_metrics(dat, model, model_scores_path)
 
     print("getting best threshold...")
-    thresh = utils_train.get_best_thresh(dat, model)
+    thresh = get_best_thresh(dat, model)
 
 
     print("scoring multif0 metrics on test sets...")
