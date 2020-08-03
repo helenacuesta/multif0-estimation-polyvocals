@@ -48,6 +48,9 @@ def main(args):
 
         if not fname.endswith('.wav'): continue
 
+        if 'rev_' in fname:
+            fname = fname[4:]
+
         # predict using trained model
         predicted_output, _, _ = utils_train.get_single_test_prediction(model,
                                                                   npy_file=None,
@@ -60,7 +63,7 @@ def main(args):
             predicted_output.astype(np.float32))
 
         # get multif0 output from prediction
-        for thresh in [0.2, 0.3, 0.4, 0.5, 0.6]:
+        for thresh in [0.2, 0.3, 0.4, 0.5]:
 
             est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, thresh)
 
