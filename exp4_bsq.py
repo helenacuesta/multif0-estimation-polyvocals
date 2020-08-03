@@ -10,6 +10,7 @@ import os
 import argparse
 
 
+
 '''Predict multiple F0 values for the Barbershop quartets files using model3 trained in experiment 4
 '''
 
@@ -72,7 +73,7 @@ def main(args):
                 ref_freqs[i] = np.array([f for f in fqs if f > 0])
 
         # optimize threshold for this data
-
+        '''
         accuracies = []
 
         # get multif0 output from prediction
@@ -91,13 +92,19 @@ def main(args):
 
         mx_idx = np.argmax(accuracies)
         trsh = thresholds[mx_idx]
+        '''
+
+        trsh = 0.5
+
         est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, trsh)
         for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
             if any(fqs <= 0):
                 est_freqs[i] = np.array([f for f in fqs if f > 0])
 
-        #output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], trsh))
-        #utils.save_multif0_output(est_times, est_freqs, output_mf0)
+        '''Save output multi-f0
+        '''
+        output_mf0 = os.path.join(save_path, "{}_{}.csv".format(fname.split('.')[0], trsh))
+        utils_train.save_multif0_output(est_times, est_freqs, output_mf0)
 
         scores_100 = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=1)
         scores_100['track'] = fname.replace('.wav', '')
