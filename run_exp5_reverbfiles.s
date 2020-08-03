@@ -14,5 +14,5 @@ module load cudnn/7.0v4.0
 module load cuda/10.1.105
 
 
-python predict_experiment5.py --model_path /scratch/hc2945/data/models --save_path /scratch/hc2945/data/ChoirDataset/experiment5 --list_of_files ./reverb_files_exp5.txt
+python predict_experiment5.py --model_path /scratch/hc2945/data/models --save_path /scratch/hc2945/data/experiment_output/exp5multif0 --list_of_files ./reverb_files_exp5.txt
 
