@@ -56,7 +56,7 @@ def main(args):
                                                                   npy_file=None,
                                                                   audio_file=os.path.join(audio_path, fname))
 
-        predicted_output = medfilt2d(predicted_output, kernel_size=(1, 11))
+        #predicted_output = medfilt2d(predicted_output, kernel_size=(1, 11))
 
         np.save(os.path.join(
             save_path, "{}_prediction.npy".format(fname.split('.')[0])),
