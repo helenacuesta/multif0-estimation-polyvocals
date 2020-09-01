@@ -21,6 +21,7 @@ import keras.backend as K
 
 
 ''' TRAINING UTIL FUNCTIONS
+    Some of the functions in this file are taken/adapted from deepsalience.
 '''
 
 RANDOM_STATE = 42

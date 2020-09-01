@@ -1,7 +1,7 @@
-
-'''This script contains the networks used in the project for other scripts to easily import
+'''This script contains the network architectures used in the project.
 '''
-import keras
+
+
 from keras.models import Model
 from keras.layers import Input, Lambda, Concatenate
 from keras.layers.convolutional import Conv2D

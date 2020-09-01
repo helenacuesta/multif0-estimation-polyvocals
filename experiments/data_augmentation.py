@@ -181,7 +181,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Several steps: (1) Convert f0 annotations to jams format for further use, (2) pitch-shifting for dataugm.")
+        description="Two steps: (1) Convert f0 annotations to jams format for further use, (2) pitch-shifting for data augmentation.")
 
     parser.add_argument("--f0-path",
                         dest='path_to_annotations',

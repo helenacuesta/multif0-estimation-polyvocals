@@ -1,8 +1,5 @@
 '''
-This script creates vocal quartets using the three target datasets: CSD, ECS, DCS, which are augmented
-using pitch-shifting from MUDA.
-
-The code is specifically written for these datasets, but can be easily adapted to other multitracks.
+This script creates the audio mixtures for all the working datasets.
 '''
 
 import sox
@@ -39,21 +36,6 @@ def combine_audio_files(params):
         soundfile.write(os.path.join(config.audio_save_folder, 'reverb', params['output_fname']), y_rev, samplerate=params['sr'])
 
 
-    '''cmb = sox.Combiner()
-    cmb.convert(samplerate=22050)
-    cmb.build(
-        [config.csd_folder + filenames[0], config.csd_folder + filenames[1],
-         config.csd_folder + filenames[2], config.csd_folder + filenames[3]],
-        os.path.join(config.audio_save_folder, output_fname), 'mix')  # , 'mix', input_volumes=[0.6, 0.3, 0.3, 0.3])
-
-    # if the reverb option is active, this creates the reverb audio files using an IR from Isophonics
-    if reverb:
-        y_ir, sr_ir = librosa.load('./ir/IR_greathall.wav', sr=22050)
-        y_sig, sr_sig = librosa.load(os.path.join(config.audio_save_folder, output_fname), sr=22050)
-        y_rev = scipy.signal.convolve(y_sig, y_ir, mode="full")
-        soundfile.write(os.path.join(config.audio_save_folder, 'reverb', output_fname), y_rev, samplerate=22050)'''
-
-
 
 
 def create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder):
@@ -66,17 +48,9 @@ def create_dict_entry(diction, audiopath, audiofname, annot_files, annot_folder)
     return diction
 
 
-def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, exclude_dataset=None, compute_audio_mix=True, compute_metadata=True):
+def create_full_dataset_mixes(dataset, mixes_wavpath, reverb=True, compute_audio_mix=True, compute_metadata=True):
 
     mtracks = dict()
-
-    #TODO: figure out how to handle this
-    if exclude_dataset is not None:
-        print("Sth needs to be done here!")
-
-
-    dataset_ids = ['CSD', 'ECS', 'DCS', 'BC', 'BSQ']
-
 
     # ------------ Process Choral Singing Dataset ------------ #
 
@@ -501,8 +475,7 @@ def main():
     print("Dataset info loaded.")
 
     # use the dataset information to create audio mixtures and annotations
-    create_full_dataset_mixes(dataset, config.audio_save_folder, reverb=True, exclude_dataset=None,
-                              compute_audio_mix=True, compute_metadata=True)
+    create_full_dataset_mixes(dataset, config.audio_save_folder, reverb=True, compute_audio_mix=True, compute_metadata=True)
 
 
 if __name__ == '__main__':
