@@ -2,14 +2,25 @@
 
 This repo contains the companion code for the ISMIR paper:
 
-Cuesta, H., McFee, B., & Gómez, E. (2020). Multiple F0 Estimation in Vocal Ensembles using Convolutional Neural
-Networks. In _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)._ 
+Helena Cuesta, Brian McFee and Emilia Gómez (2020). **Multiple F0 Estimation in Vocal Ensembles using Convolutional Neural
+Networks**. In _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)._ 
 Montreal, Canada (virtual).
 
 Please, cite the aforementioned paper if using this material.
 
-**Note:** This documentation is a work in progress and will be updated regularly. In additional, improved
+**Note 1:** This documentation is a work in progress and will be updated regularly. In additional, improved
 models might be added to the repo in the future.
+
+**Note 2:** This project builds upon the **DeepSalience** project:
+
+Rachel M. Bittner, Brian McFee, Justin Salamon, Peter Li, and Juan P. Bello "Deep Salience Representations 
+for F0 Estimation in Polyphonic Music”, ISMIR 2017, Suzhou, China.
+
+Parts of this code are taken/adapted from their scripts, publicly available in 
+https://github.com/rabitt/ismir2017-deepsalience.
+
+
+
 
 ## Usage / requirements
 
@@ -50,7 +61,7 @@ The system will save a CSV file with the output in the same directory where the 
 
 ```utils.py``` and ```utils_train.py``` both contain util functions for the experiments.
 
-### experiments
+### /experiments
 
 This folder contains all the code we developed to carry out the experiments: data augmentation, feature extraction, 
 training, evaluation...etc. Here's a short description of each of them.
@@ -101,7 +112,7 @@ the code for the evaluation (will be added soon).
 Due to data access concerns, these two experiments are barely reproducible. 
 However, in the ```models``` folder we provide both trained models.
 
-### models
+### /models
 
 **exp1multif0.pkl**, Early/Deep (model1), default data splits
 
@@ -113,7 +124,11 @@ However, in the ```models``` folder we provide both trained models.
 
 **exp5multif0.pkl**, Late/Deep (model3), default data splits except reverb files (experiment 3 in the paper)
 
+### /bsh
 
+Most of the bash scripts used for the experiments are inside this folder. exp1_1, exp1_2, exp1_3 refer to the 
+three models in experiment 1; exp2 and exp3 belong to experiment 2 and 3 from the paper; exp4 is the no-phase
+experiment. 
 
 
 
