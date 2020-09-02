@@ -1,4 +1,11 @@
-"""Predict multiple F0 output from input audio or folder
+"""
+Predict multiple F0 output from input audio or folder.
+This code is linked to the ISMIR paper:
+
+Helena Cuesta, Brian McFee and Emilia Gómez (2020).
+Multiple F0 Estimation in Vocal Ensembles using Convolutional Neural Networks.
+In Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR).
+Montreal, Canada (virtual).
 """
 
 from __future__ import print_function

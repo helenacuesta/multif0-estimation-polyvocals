@@ -10,6 +10,8 @@ from keras import backend as K
 
 
 def build_model1():
+    '''Early/Deep
+    '''
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
@@ -70,6 +72,8 @@ def build_model1():
     return model
 
 def build_model2():
+    '''Early/Shallow
+    '''
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
@@ -247,6 +251,8 @@ def base_model(input, let):
 
 
 def build_model3():
+    '''Late/Deep
+    '''
 
     input_shape_1 = (None, None, 5) # HCQT input shape
     input_shape_2 = (None, None, 5)  # phase differentials input shape
@@ -279,6 +285,8 @@ def build_model3():
     return model
 
 def build_model3_mag():
+    '''Late/Deep no phase
+    '''
 
     input_shape_1 = (None, None, 5) # HCQT input shape
 

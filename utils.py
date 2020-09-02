@@ -11,7 +11,6 @@ import mir_eval
 import muda
 
 
-#import keras.backend as K
 from scipy.ndimage import filters
 
 

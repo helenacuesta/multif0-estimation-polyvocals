@@ -1,6 +1,5 @@
 import os
 import glob
-
 import json
 import csv
 import ast
