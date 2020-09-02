@@ -1,22 +1,11 @@
 import models
 import utils_train
-import pandas as pd
-from config import *
-import mir_eval
+from experiments.config import *
 
-from scipy.signal import medfilt2d
+import mir_eval
 
 import os
 import argparse
-
-
-
-'''Predict multiple F0 values for the Barbershop quartets files using model3 trained in experiment 4
-'''
-
-
-''' Parameters
-'''
 
 
 def main(args):
@@ -72,27 +61,6 @@ def main(args):
             if any(fqs <= 0):
                 ref_freqs[i] = np.array([f for f in fqs if f > 0])
 
-        # optimize threshold for this data
-        '''
-        accuracies = []
-
-        # get multif0 output from prediction
-        thresholds = [0.2, 0.3, 0.4, 0.5]
-        for thresh in thresholds:
-
-            est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, thresh)
-
-            for i, (tms, fqs) in enumerate(zip(est_times, est_freqs)):
-                if any(fqs <= 0):
-                    est_freqs[i] = np.array([f for f in fqs if f > 0])
-
-            # evaluation
-            scores = mir_eval.multipitch.evaluate(ref_times, ref_freqs, est_times, est_freqs, window=1)
-            accuracies.append(scores['Accuracy'])
-
-        mx_idx = np.argmax(accuracies)
-        trsh = thresholds[mx_idx]
-        '''
 
         trsh = 0.5
 
@@ -137,9 +105,6 @@ def main(args):
     df = pd.DataFrame(all_scores_20)
     df.to_csv(scores_path)
     df.describe().to_csv(score_summary_path)
-
-
-
 
 
 

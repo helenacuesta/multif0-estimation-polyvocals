@@ -1,4 +1,4 @@
-import config
+from experiments import config
 
 import os
 import numpy as np

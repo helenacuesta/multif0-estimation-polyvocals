@@ -28,8 +28,6 @@ def create_jams(times, freqs, outfile):
     pitch_a = jams.Annotation(namespace='pitch_contour')
     pitch_a.annotation_metadata.data_source = "Tony pitch estimation + manual correction"
     pitch_a.annotation_metadata.annotation_tools = "Tony"
-    #pitch_a.annotation_metadata.curator = jams.Curator(name="Helena Cuesta",
-    #                                                       email="helena.cuesta@upf.edu")
 
     for t, p in zip(times, freqs):
 

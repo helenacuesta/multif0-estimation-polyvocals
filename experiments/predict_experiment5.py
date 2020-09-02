@@ -1,9 +1,6 @@
 import models
 import utils_train
-import pandas as pd
-from config import *
-
-from scipy.signal import medfilt2d
+from experiments.config import *
 
 import os
 import argparse

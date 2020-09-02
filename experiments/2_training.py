@@ -5,7 +5,7 @@ import keras
 import numpy as np
 import csv
 
-import config
+from experiments import config
 import utils
 import utils_train
 import models

@@ -9,7 +9,7 @@ import argparse
 from joblib import Parallel, delayed
 
 import utils
-import config
+from experiments import config
 
 import os
 

@@ -11,7 +11,7 @@ import soundfile
 
 import scipy
 
-import config
+from experiments import config
 import utils
 
 

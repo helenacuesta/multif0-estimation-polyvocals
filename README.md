@@ -8,6 +8,20 @@ Montreal, Canada (virtual).
 
 Please, cite the aforementioned paper if using this material.
 
+**Note:** This documentation is a work in progress and will be updated regularly. In additional, improved
+models might be added to the repo in the future.
+
+## Usage / requirements
+
+To use this framework, please do this two first steps: 
+
+* Git clone the repo
+
+* Install required packages: ```pip install -r requirements.txt```
+
+Note that this code runs Keras with Tensorflow as backend. Models were trained and evaluated using GPU.
+
+
 ## Description
 
 ### Main scripts
@@ -16,9 +30,9 @@ This is the main script of the repo if you want to use the models "out-of-the-bo
 Run the script specifying the working mode, i.e., an audio file or a folder that contains several audio files, and
 which model to run:
 
-* Early/Shallow --> model1
-* Early/Deep --> model2
-* Late/Deep --> model3
+* Early/Deep --> model1
+* Early/Shallow --> model2
+* Late/Deep --> model3 _(recommended)_
 
 An example command to predict multiple F0 values of an audio file using the Late/Deep model. Note that we use a "0"
 flag for the working mode we do don't use.
@@ -39,12 +53,11 @@ The system will save a CSV file with the output in the same directory where the 
 ### experiments
 
 This folder contains all the code we developed to carry out the experiments: data augmentation, feature extraction, 
-training, evaluation...etc. Here's a short description of each of them. **This part of the documentation is 
-a work in progress and we keep updating it.**
+training, evaluation...etc. Here's a short description of each of them.
 
 _**Note**: The scripts related to data structure and preparation are specifically designed for our working datasets, 
-some of them not publicly-available (see paper for more info on this). Although the code can be adapted to other datasets, note that the user needs
-to modify the dataset structure that we define in ```setup.py```._
+some of them not publicly-available (see paper for more info on this). Although the code can be adapted to 
+other datasets, note that the user needs to modify the dataset structure that we define in ```setup.py```._
 
 ```data_augmentation.py```: this script first converts all F0 annotations of individual audio files from TXT/CSV 
 files to **jams** format. Then, each individual audio recording and its associated F0 curve is pitch-shifted using 
@@ -62,11 +75,46 @@ reverb, and then we prepare the associated annotations. A json file (mtracks_inf
 information for every audio mixture is also created.
 
 ```1_prep.py```: feature computation for all audio mixtures, targets computation for all annotations, and generation
-of the data splits json file with train/validation/test data splits for all experiments (data_splits.json).
+of the data splits json file with train/validation/test data splits for all experiments (data_splits.json). 
+It's called from the command line with three parameters: the directory of the audio mixtures, the path to the 
+mtracks_info.json file (generated during setup), and the directory to save features. Example:
+```
+python 1_prep.py --audio-path ./audiomixtures --metadata-path ./mtracks_info.json --save-dir ./features
+```
 
-```2_training.py```
+```2_training.py```: this is the script for training, threshold optimization, and evaluation. It takes the 
+_data_splits.json_ file, and uses the train/validation/test subsets by default. An example of training the 
+Early/Shallow model:
+```
+python 2_training.py --model model2 --save_key exp2multif0 --data_splits_file data_splits.json
+```
 
-```3_training_nophase.py```
+```3_training_nophase.py```: additional train/test script for the experiments without phase information at the input 
+with the Late/Deep model.
+
+```compute_multif0_from_activation.py```: generate (quantized) joint multiple F0 annotations
+from the targets computed during data preparation. 
+
+```exp4_bsq.py``` and ```predict_experiment5.py``` are the prediction scripts for experiments 2 and 3 in the paper.
+They use models trained with ```2_training.py``` but different data splits. Note that the latter does not include
+the code for the evaluation (will be added soon).
+Due to data access concerns, these two experiments are barely reproducible. 
+However, in the ```models``` folder we provide both trained models.
+
+### models
+
+**exp1multif0.pkl**, Early/Deep (model1), default data splits
+
+**exp2multif0.pkl**, Early/Shallow (model2), default data splits
+
+**exp3multif0.pkl**, Late/Deep (model3), default data splits
+
+**exp4multif0.pkl**, Late/Deep (model3), default data splits except BSQ (experiment 2 in the paper)
+
+**exp5multif0.pkl**, Late/Deep (model3), default data splits except reverb files (experiment 3 in the paper)
+
+
+
 
 
 
