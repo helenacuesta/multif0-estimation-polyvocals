@@ -35,7 +35,7 @@ Note that this code runs Keras with Tensorflow as backend. Models were trained a
 
 ## Description
 
-### Main scripts
+### main scripts
 ```predict_on_audio.py```:
 This is the main script of the repo if you want to use the models "out-of-the-box".
 Run the script specifying the working mode, i.e., an audio file or a folder that contains several audio files, and
@@ -61,7 +61,7 @@ The system will save a CSV file with the output in the same directory where the 
 
 ```utils.py``` and ```utils_train.py``` both contain util functions for the experiments.
 
-### /experiments
+### experiments/
 
 This folder contains all the code we developed to carry out the experiments: data augmentation, feature extraction, 
 training, evaluation...etc. Here's a short description of each of them.
@@ -112,7 +112,7 @@ the code for the evaluation (will be added soon).
 Due to data access concerns, these two experiments are barely reproducible. 
 However, in the ```models``` folder we provide both trained models.
 
-### /models
+### models/
 
 **exp1multif0.pkl**, Early/Deep (model1), default data splits
 
@@ -124,7 +124,7 @@ However, in the ```models``` folder we provide both trained models.
 
 **exp5multif0.pkl**, Late/Deep (model3), default data splits except reverb files (experiment 3 in the paper)
 
-### /bsh
+### bsh/
 
 Most of the bash scripts used for the experiments are inside this folder. exp1_1, exp1_2, exp1_3 refer to the 
 three models in experiment 1; exp2 and exp3 belong to experiment 2 and 3 from the paper; exp4 is the no-phase
