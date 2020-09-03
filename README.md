@@ -28,7 +28,10 @@ To use this framework, please do this two first steps:
 
 * Git clone the repo
 
-* Install required packages: ```pip install -r requirements.txt```
+* ```cd ./multif0-estimation-polyvocals```
+
+* Create a conda environment using the yml file: ```conda env create --file environment.yml```
+
 
 Note that this code runs Keras with Tensorflow as backend. Models were trained and evaluated using GPU.
 
