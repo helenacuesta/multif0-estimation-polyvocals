@@ -8,7 +8,7 @@ Montreal, Canada (virtual).
 
 Please, cite the aforementioned paper if using this material.
 
-**Note 1:** This documentation is a work in progress and will be updated regularly. In additional, improved
+**Note 1:** This documentation is a work in progress and will be updated regularly. In addition, improved
 models might be added to the repo in the future.
 
 **Note 2:** This project builds upon the **DeepSalience** project:
@@ -52,12 +52,12 @@ An example command to predict multiple F0 values of an audio file using the Late
 flag for the working mode we do don't use.
 
 ```
-python predict.py --model model3 --audiofile poly_sing.wav --audio_folder 0
+python predict_on_audio.py --model model3 --audiofile poly_sing.wav --audio_folder 0
 ```
 
 And an example command for the folder mode:
 ```
-python predict.py --model model3 --audiofile 0 --audio_folder ../data/vocal_music
+python predict_on_audio.py --model model3 --audiofile 0 --audio_folder ../data/vocal_music
 ```
 
 The system will save a CSV file with the output in the same directory where the input audio file is located.
@@ -131,8 +131,8 @@ However, in the ```models``` folder we provide both trained models.
 
 Most of the bash scripts used for the experiments are inside this folder. exp1_1, exp1_2, exp1_3 refer to the 
 three models in experiment 1; exp2 and exp3 belong to experiment 2 and 3 from the paper; exp4 is the no-phase
-experiment. 
-
+experiment. The versions of the modules we load in these scripts are the ones we used during our experiments, but
+if attempting to re-run the code, the user might have to change them according to their own configuration. 
 
 
 
