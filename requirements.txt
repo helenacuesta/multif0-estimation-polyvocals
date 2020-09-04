@@ -3,7 +3,7 @@ matplotlib==3.3.1
 numpy==1.19.1
 pandas==1.1.1
 scipy==1.5.2
-tensorflow==1.13.1
+tensorflow==1.15.2
 audioread==2.1.8
 jams==0.3.4
 librosa==0.8.0
