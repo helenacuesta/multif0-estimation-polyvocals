@@ -34,8 +34,16 @@ To use this framework, please do this two first steps:
 and install the required packages: ```pip install -r requirements.txt```
 
 
-Note that this code runs Keras with Tensorflow as backend. Models were trained and evaluated using GPU.
+Note that this code runs Keras with Tensorflow as backend in Python 3.6.
 
+In the requirements we specify ```tensorflow==1.15```, which runs the code in the CPU.
+To run the code using a GPU (recommended) , please install ```tensorflow-gpu==1.15```. 
+Both can be installed using ```pip```.
+
+Note that the models were trained using Tensorflow 1.x, 
+and we have only tested them with versions 1.13.1 and 1.15. 
+ 
+In further tests we plan to shift to tensorflow 2.
 
 ## Description
 
