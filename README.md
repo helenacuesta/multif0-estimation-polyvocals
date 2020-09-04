@@ -24,7 +24,7 @@ https://github.com/rabitt/ismir2017-deepsalience.
 
 ## Usage / requirements
 
-To use this framework, please do this two first steps: 
+To use this framework, please do this these first steps: 
 
 * Git clone the repo
 
@@ -36,12 +36,12 @@ and install the required packages: ```pip install -r requirements.txt```
 
 Note that this code runs Keras with Tensorflow as backend in Python 3.6.
 
-In the requirements we specify ```tensorflow-gpu==1.15```, which runs the code in the GPU.
+In the requirements we specify ```tensorflow-gpu==1.15.2```, which runs the code in the GPU.
 To use CPU instead, please install ```tensorflow==1.15```. 
 Both can be installed using ```pip```.
 
 Note that the experiments were done using tensorflow-gpu 
-and we have only tested them with versions 1.13.1 and 1.15. 
+and we have only tested them with versions 1.13.1 and 1.15.2. 
 
 Note that the default version of tensorflow is currently 2.x. 
 In further tests we plan to shift to tensorflow 2.
