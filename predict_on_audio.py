@@ -19,6 +19,34 @@ import os
 import argparse
 
 
+def get_single_test_prediction_phase_free(model, audio_file=None):
+    """Generate output from a model given an input numpy file
+    """
+
+    if audio_file is not None:
+        # should not be the case
+        pump = utils.create_pump_object()
+        features = utils.compute_pump_features(pump, audio_file)
+        input_hcqt = features['dphase/mag'][0]
+
+
+    else:
+        raise ValueError("one of npy_file or audio_file must be specified")
+
+    input_hcqt = input_hcqt.transpose(1, 2, 0)[np.newaxis, :, :, :]
+
+    n_t = input_hcqt.shape[2]
+    t_slices = list(np.arange(0, n_t, 5000))
+    output_list = []
+    # we need two inputs
+    for t in t_slices:
+        p = model.predict(np.transpose(input_hcqt[:, :, t:t+5000, :], (0, 1, 3, 2)))[0, :, :]
+
+        output_list.append(p)
+
+    predicted_output = np.hstack(output_list)
+    return predicted_output, input_hcqt
+
 def get_single_test_prediction(model, audio_file=None):
     """Generate output from a model given an input numpy file.
        Part of this function is part of deepsalience
@@ -112,10 +140,19 @@ def main(args):
 
     # select operation mode and compute prediction
     if audiofile is not "0":
-        # predict using trained model
-        predicted_output, _, _ = get_single_test_prediction(
-            model, audio_file=audiofile
-        )
+
+        if model is 'model7':
+            # predict using trained model
+            predicted_output, _ = get_single_test_prediction_phase_free(
+                model, audio_file=os.path.join(
+                    audio_folder, audiofile)
+            )
+        else:
+            # predict using trained model
+            predicted_output, _, _ = get_single_test_prediction(
+                model, audio_file=audiofile
+            )
+
         predicted_output = predicted_output.astype(np.float32)
 
         est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, thresh)
@@ -138,11 +175,21 @@ def main(args):
 
             if not audiofile.endswith('wav'): continue
 
-            # predict using trained model
-            predicted_output, _, _ = get_single_test_prediction(
-                model, audio_file=os.path.join(
-                    audio_folder, audiofile)
-            )
+            if model is 'model7':
+                # predict using trained model
+                predicted_output, _ = get_single_test_prediction_phase_free(
+                    model, audio_file=os.path.join(
+                        audio_folder, audiofile)
+                )
+
+            else:
+
+                # predict using trained model
+                predicted_output, _, _ = get_single_test_prediction(
+                    model, audio_file=os.path.join(
+                        audio_folder, audiofile)
+                )
+
             predicted_output = predicted_output.astype(np.float32)
 
             est_times, est_freqs = utils_train.pitch_activations_to_mf0(predicted_output, thresh)
