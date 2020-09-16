@@ -83,6 +83,22 @@ def main(args):
         model.load_weights(model_path)
         thresh = 0.5
 
+    elif model_name == 'model4':
+
+        save_key = 'exp4multif0'
+        model_path = "./models/{}.pkl".format(save_key)
+        model = models.build_model3()
+        model.load_weights(model_path)
+        thresh = 0.4
+
+    elif model_name == 'model7':
+
+        save_key = 'exp7multif0'
+        model_path = "./models/{}.pkl".format(save_key)
+        model = models.build_model3_mag()
+        model.load_weights(model_path)
+        thresh = 0.4
+
     else:
         raise ValueError("Specified model must be model1, model2 or model3.")
 
