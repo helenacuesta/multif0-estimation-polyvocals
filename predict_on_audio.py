@@ -141,7 +141,7 @@ def main(args):
     # select operation mode and compute prediction
     if audiofile is not "0":
 
-        if model_name is 'model7':
+        if model_name == 'model7':
             # predict using trained model
             predicted_output, _ = get_single_test_prediction_phase_free(
                 model, audio_file=os.path.join(
@@ -175,7 +175,7 @@ def main(args):
 
             if not audiofile.endswith('wav'): continue
 
-            if model_name is 'model7':
+            if model_name == 'model7':
                 # predict using trained model
                 predicted_output, _ = get_single_test_prediction_phase_free(
                     model, audio_file=os.path.join(
