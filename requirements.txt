@@ -2,7 +2,7 @@ numpy==1.16.4
 keras
 matplotlib
 pandas
-tensorflow-gpu==1.15.2
+tensorflow-gpu==1.15.4
 audioread
 jams
 librosa
