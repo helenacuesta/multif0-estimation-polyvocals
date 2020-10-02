@@ -46,9 +46,8 @@ and we have only tested them with versions 1.13.1 and 1.15.2.
 The default version of tensorflow is currently 2.x. 
 In further tests we plan to shift to tensorflow 2.
 
-## Description
+## Predict
 
-### main scripts: compute the output from these models
 ```predict_on_audio.py```:
 This is the main script of the repo if you want to use the models "out-of-the-box".
 Run the script specifying the working mode, i.e., an audio file or a folder that contains several audio files, and
@@ -74,6 +73,7 @@ The system will save a CSV file with the output in the same directory where the 
 
 ```utils.py``` and ```utils_train.py``` both contain util functions for the experiments.
 
+## Others
 ### experiments/
 
 This folder contains all the code we developed to carry out the experiments: data augmentation, feature extraction, 
