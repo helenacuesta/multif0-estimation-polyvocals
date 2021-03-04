@@ -43,7 +43,7 @@ Both can be installed using ```pip```.
 Note that the experiments were done using tensorflow-gpu 
 and we have only tested them with versions 1.13.1 and 1.15.4. 
 
-The default version of tensorflow is currently 2.x. 
+The default version of tensorflow is currently 1.x. 
 In further tests we plan to shift to tensorflow 2.
 
 ## Predict
