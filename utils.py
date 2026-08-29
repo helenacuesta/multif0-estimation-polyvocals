@@ -104,7 +104,7 @@ def get_freq_grid():
     """
     (bins_per_octave, n_octaves, _, _, f_min, _, over_sample) = get_hcqt_params()
     freq_grid = librosa.cqt_frequencies(
-        n_octaves * 12 * over_sample, f_min, bins_per_octave=bins_per_octave)
+        n_octaves * 12 * over_sample, fmin=f_min, bins_per_octave=bins_per_octave)
     return freq_grid
 
 
@@ -248,6 +248,53 @@ def create_pump_object():
 def compute_pump_features(pump, audio_fpath):
 
     data = pump(audio_f=audio_fpath)
+
+    return data
+
+
+def compute_pump_features_segmented(pump, audio_fpath, seg_duration=10.0, overlap=1.0):
+    """Compute HCQT/phase-diff features for a (possibly long) audio file by
+    running the CQT over overlapping segments instead of the whole signal
+    at once. This keeps peak memory bounded regardless of audio duration.
+    The overlap context is trimmed off after each segment is transformed so
+    the concatenated output matches a single full-signal pass.
+    """
+
+    (_, _, _, sr, _, hop_length, _) = get_hcqt_params()
+
+    y, _ = librosa.load(audio_fpath, sr=sr)
+    n_samples = len(y)
+
+    seg_samples = int(seg_duration * sr)
+    overlap_samples = int(overlap * sr)
+
+    mag_list = []
+    dphase_list = []
+
+    start = 0
+    while start < n_samples:
+        end = min(n_samples, start + seg_samples)
+
+        ctx_start = max(0, start - overlap_samples)
+        ctx_end = min(n_samples, end + overlap_samples)
+
+        feats = pump(y=y[ctx_start:ctx_end], sr=sr)
+
+        mag = feats['dphase/mag'][0]
+        dphase = feats['dphase/dphase'][0]
+
+        left_trim = int(round((start - ctx_start) / hop_length))
+        n_frames = int(round((end - start) / hop_length))
+
+        mag_list.append(mag[left_trim:left_trim + n_frames])
+        dphase_list.append(dphase[left_trim:left_trim + n_frames])
+
+        start = end
+
+    data = {
+        'dphase/mag': [np.concatenate(mag_list, axis=0)],
+        'dphase/dphase': [np.concatenate(dphase_list, axis=0)],
+    }
 
     return data
 

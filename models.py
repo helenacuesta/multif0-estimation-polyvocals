@@ -2,11 +2,9 @@
 '''
 
 
-from keras.models import Model
-from keras.layers import Input, Lambda, Concatenate
-from keras.layers.convolutional import Conv2D
-from keras.layers.normalization import BatchNormalization
-from keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Lambda, Concatenate, Conv2D, BatchNormalization
+from tensorflow.keras import backend as K
 
 
 def build_model1():
